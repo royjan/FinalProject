@@ -1,0 +1,7 @@
+tensorflow~=2.3.1
+# skorch~=0.9.0
+pandas~=1.1.3
+# torch~=1.6.0+cpu
+numpy~=1.18.5
+sqlalchemy
+dictalchemy
