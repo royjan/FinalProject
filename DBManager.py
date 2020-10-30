@@ -20,3 +20,11 @@ class DBManager:
     @classmethod
     def get_session(cls):
         return cls.db_scoped_session()
+
+    @classmethod
+    def reflect_table(cls, table_name):
+        from sqlalchemy import MetaData
+        metadata = MetaData(bind=cls.engine, schema=cls.scheme)
+        metadata.reflect(only=[table_name])
+        table = metadata.tables[cls.scheme + '.' + table_name]
+        return table

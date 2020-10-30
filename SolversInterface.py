@@ -1,13 +1,15 @@
 class SolversInterface:
-    def load_from_file(self):
-        pass
+    model = None
 
-    def export_model(self):
-        pass
+    def load_from_json(self):
+        raise NotImplemented
+
+    def export_to_json(self):
+        raise NotImplemented
 
     def train(self, *args, **kwargs):
-        pass
+        raise NotImplemented
 
     @classmethod
     def get_path(cls):
-        pass
+        raise NotImplemented
