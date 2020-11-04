@@ -19,7 +19,9 @@ class SolversInterface:
         raise NotImplemented
 
     def export_model_to_file(self):
-        raise NotImplemented
+        import pickle
+        with open(self.get_path(), 'wb') as file:
+            pickle.dump(self.model, file)
 
     def train(self, train_x, train_y, *args, **kwargs):
         raise NotImplemented

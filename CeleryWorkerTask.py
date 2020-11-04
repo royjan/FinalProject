@@ -1,11 +1,15 @@
 # from Solvers.SolverInterface import SolverInterface
 
 from celery import Celery
+from kombu import Queue
 
 from DBManager import DBManager
 from DataManager import DataManagement
+
 broker_url = 'amqp://worker:kingkingking@18.193.6.223:32781/rhost'
-app = Celery('tasks', broker=broker_url)
+app = Celery('CeleryWorkerTask', broker=broker_url)
+
+app.conf.task_queues = [Queue('test-q', durable=False, routing_key='test-q')]
 
 
 @app.task
@@ -51,5 +55,15 @@ class CeleryWorkerTask:
         return self.df[self.label]
 
 
+@app.task
+def multi(x, y):
+    from sklearn.linear_model import LinearRegression
+    model = LinearRegression()
+    # model.fit(x, y)
+    from sklearn_json import to_dict
+    print(to_dict(model))
+
+
 if __name__ == '__main__':
-    x = CeleryWorkerTask()
+    z = multi.s(x=[[1, 2, 3], [3, 4, 5], [5, 6, 7]], y=[1,3,5]).apply_async(queue='test-q')
+    print(z)

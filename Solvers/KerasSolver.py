@@ -1,6 +1,7 @@
 import sklearn_json as skljson
 import tensorflow as tf
-
+# tf.keras.wrappers.scikit_learn.KerasClassifier
+# tf.keras.wrappers.scikit_learn.KerasRegressor
 from Solvers.SolversInterface import SolversInterface
 
 
