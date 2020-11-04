@@ -60,9 +60,9 @@ class PreprocessData:
         if not os.path.isfile(self.path):
             raise FileNotFoundError("File not found!")
         if self.path.endswith("xls") or self.path.endswith("xlsx"):
-            self.df = pd.read_excel(self.path)
+            self.df = pd.read_excel(self.path, index_col=False)
         elif self.path.endswith("csv"):
-            self.df = pd.read_csv(self.path)
+            self.df = pd.read_csv(self.path, index_col=False)
         elif self.path.endswith("pkl"):
             self.df = pd.read_pickle(self.path)
         else:
