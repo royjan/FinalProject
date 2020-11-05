@@ -1,35 +1,33 @@
 from dictalchemy import make_class_dictable
 from sqlalchemy import Integer, Column, DateTime, String, func
 from sqlalchemy.ext.declarative import declarative_base
-import logging
 from DBManager import DBManager
 
 Base = declarative_base()
 make_class_dictable(Base)
 
 
-class LogTable(Base):
+class Severity:
+    DEBUG = 10
+    INFO = 20
+    WARNING = 30
+    ERROR = 40
+    CRITICAL = 50
+
+
+class Logger(Base):
     __tablename__ = "logs"
     log_id = Column("log_id", Integer, quote=True, autoincrement=True, primary_key=True)
     created_date = Column("created_date", DateTime(timezone=True), quote=True, server_default=func.now())
-    severity = Column("severity", String(255), quote=True)  # 10 \ 20 \ 30 \ 40
-    trace = Column("trace", String(255), quote=True)
+    severity = Column("severity", Integer, quote=True)  # 10 \ 20 \ 30 \ 40
     task_type = Column("task_type", String(255), quote=True)  # agent \ worker
     task_id = Column("task_id", Integer, quote=True)
     msg = Column("msg", String(255), quote=True)
 
-    def __init__(self, msg, trace, severity='Debug'):  # task_type, task_id,
-        self.msg = msg
-        self.trace = trace
-        # self.task_type = task_type
-        # self.task_id = task_id
-        self.severity = severity
-
-    def __unicode__(self):
-        return self.__repr__()
-
-    def __repr__(self):
-        return "<Log: %s - %s>" % (self.created_at.strftime('%m/%d/%Y-%H:%M:%S'), self.msg[:50])
+    @classmethod
+    def print(cls, msg, severity=Severity.DEBUG):
+        DBManager.get_session().execute(cls.__table__.insert().values(msg=msg, severity=severity))
+        DBManager.get_session().commit()
 
     @classmethod
     def create_db(cls):
@@ -41,8 +39,5 @@ class LogTable(Base):
         for row in rows:
             print(row.msg)
 
-
 if __name__ == '__main__':
-    LogTable.__table__.drop()
-    LogTable.create_db()
-    # LogTable.show_rows()
+    Logger.create_db()
