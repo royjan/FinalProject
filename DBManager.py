@@ -28,6 +28,3 @@ class DBManager:
         metadata.reflect(only=[table_name])
         table = metadata.tables[cls.scheme + '.' + table_name]
         return table
-
-if __name__ == '__main__':
-    print(DBManager.get_session().execute("SELECT 1"))

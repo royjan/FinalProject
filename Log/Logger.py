@@ -26,6 +26,7 @@ class Logger(Base):
 
     @classmethod
     def print(cls, msg, severity=Severity.DEBUG):
+        print(f"{severity}: {msg}")
         DBManager.get_session().execute(cls.__table__.insert().values(msg=msg, severity=severity))
         DBManager.get_session().commit()
 
@@ -38,6 +39,7 @@ class Logger(Base):
         rows = DBManager.get_session().query(cls).all()
         for row in rows:
             print(row.msg)
+
 
 if __name__ == '__main__':
     Logger.create_db()

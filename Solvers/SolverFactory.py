@@ -20,6 +20,3 @@ class SolverFactory:
             return solver
         raise ValueError(f"{solver_name} does not found!")
 
-
-if __name__ == '__main__':
-    print(SolverFactory.get_solver_by_name("ScikitSolver"))
