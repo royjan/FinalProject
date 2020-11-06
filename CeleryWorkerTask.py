@@ -61,3 +61,9 @@ def multi(x, y):
     model = LinearRegression()
     # model.fit(x, y)
     from sklearn_json import to_dict
+    print(to_dict(model))
+
+
+if __name__ == '__main__':
+    z = multi.s(x=[[1, 2, 3], [3, 4, 5], [5, 6, 7]], y=[1,3,5]).apply_async(queue='test-q')
+    print(z)
