@@ -13,10 +13,10 @@ class SolversInterface:
         return datetime.now().strftime("%d%m%Y_%H%M")
 
     def load_from_json(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     def export_to_json(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     def export_model_to_file(self):
         import pickle
@@ -24,7 +24,7 @@ class SolversInterface:
             pickle.dump(self.model, file)
 
     def train(self, train_x, train_y, *args, **kwargs):
-        raise NotImplemented
+        raise NotImplementedError
 
     @classmethod
     def get_path(cls):

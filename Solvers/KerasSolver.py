@@ -1,5 +1,4 @@
 import sklearn_json as skljson
-import tensorflow as tf
 # tf.keras.wrappers.scikit_learn.KerasClassifier
 # tf.keras.wrappers.scikit_learn.KerasRegressor
 from Solvers.SolversInterface import SolversInterface
@@ -12,6 +11,7 @@ class KerasSolver(SolversInterface):
         self.generator = None
 
     def build_image_generator(self):
+        import tensorflow as tf
         self.generator = tf.keras.preprocessing.image.ImageDataGenerator(
             featurewise_center=False,
             samplewise_center=False,
