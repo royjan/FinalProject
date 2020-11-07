@@ -1,11 +1,18 @@
 import sklearn_json as skljson
-# tf.keras.wrappers.scikit_learn.KerasClassifier
-# tf.keras.wrappers.scikit_learn.KerasRegressor
 from Solvers.SolversInterface import SolversInterface
 
 
 class KerasSolver(SolversInterface):
     NAME = "KerasSolver"
+
+    @staticmethod
+    def get_supported_models():
+        import tensorflow as tf
+        models = {
+            "KerasRegressor": tf.keras.wrappers.scikit_learn.KerasRegressor,
+            "KerasClassifier": tf.keras.wrappers.scikit_learn.KerasClassifier
+        }
+        return models
 
     def __init__(self):
         self.generator = None

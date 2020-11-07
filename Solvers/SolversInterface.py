@@ -12,10 +12,18 @@ class SolversInterface:
         from datetime import datetime
         return datetime.now().strftime("%d%m%Y_%H%M")
 
-    def load_from_json(self):
-        raise NotImplementedError
+    @classmethod
+    def get_model_by_name(cls, model_name):
+        models = cls.get_supported_models()
+        try:
+            return models[model_name]
+        except KeyError:
+            from Log.Logger import Logger, Severity
+            Logger.print(f"{model_name} didn't defined", severity=Severity.ERROR)
+            raise ValueError("Model not found please check yourself!")
 
-    def export_to_json(self):
+    @staticmethod
+    def get_supported_models():
         raise NotImplementedError
 
     def export_model_to_file(self):

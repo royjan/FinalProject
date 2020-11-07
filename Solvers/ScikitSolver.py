@@ -8,7 +8,7 @@ class ScikitSolver(SolversInterface):
         self.model_obj = self.get_model_by_name(model_name)
 
     @staticmethod
-    def get_model_by_name(model_name):
+    def get_supported_models():
         from sklearn.linear_model import LinearRegression
         from sklearn.svm import SVC
         from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
@@ -18,12 +18,7 @@ class ScikitSolver(SolversInterface):
             "DecisionTreeClassifier": DecisionTreeClassifier,
             "DecisionTreeRegressor": DecisionTreeRegressor
         }
-        try:
-            return models[model_name]
-        except KeyError:
-            from Log.Logger import Logger, Severity
-            Logger.print(f"{model_name} didn't defined", severity=Severity.ERROR)
-            raise ValueError("Model not found please check yourself!")
+        return models
 
     def train(self, train_x, train_y, *args, **kwargs):
         self.model.fit(train_x, train_y, *args, **kwargs)
