@@ -1,5 +1,5 @@
 class SolversInterface:
-    model = None
+    model_obj = None
     NAME = "SolversInterface"
     EXTENSION = "json"
 
@@ -19,7 +19,7 @@ class SolversInterface:
             return models[model_name]
         except KeyError:
             from Log.Logger import Logger, Severity
-            Logger.print(f"{model_name} didn't defined", severity=Severity.ERROR)
+            Logger.print(f"{model_name} doesn't define", severity=Severity.ERROR)
             raise ValueError("Model not found please check yourself!")
 
     @staticmethod
@@ -29,7 +29,7 @@ class SolversInterface:
     def export_model_to_file(self):
         import pickle
         with open(self.get_path(), 'wb') as file:
-            pickle.dump(self.model, file)
+            pickle.dump(self.model_obj, file)
 
     def train(self, train_x, train_y, *args, **kwargs):
         raise NotImplementedError

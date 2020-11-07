@@ -14,8 +14,9 @@ class KerasSolver(SolversInterface):
         }
         return models
 
-    def __init__(self):
+    def __init__(self, model_name):
         self.generator = None
+        self.model_obj = self.get_model_by_name(model_name)
 
     def build_image_generator(self):
         import tensorflow as tf
@@ -45,15 +46,19 @@ class KerasSolver(SolversInterface):
         )
 
     def export_model_to_file(self):
-        skljson.to_json(self.model, self.get_path())
+        skljson.to_json(self.model_obj, self.get_path())
 
     def train(self, train_x, train_y, *args, **kwargs):
         if self.generator:
-            return self.model.fit_generator(self.generator.flow(train_x, train_y), *args, **kwargs)
-        return self.model.fit(train_x, train_y, *args, **kwargs)
+            return self.model_obj.fit_generator(self.generator.flow(train_x, train_y), *args, **kwargs)
+        return self.model_obj.fit(train_x, train_y, *args, **kwargs)
 
     def export_to_dict(self) -> dict:
-        return skljson.to_dict(self.model)
+        return skljson.to_dict(self.model_obj)
 
     def load_from_dict(self, serialized_model: dict):
-        self.model = skljson.from_dict(serialized_model)
+        self.model_obj = skljson.from_dict(serialized_model)
+
+if __name__ == '__main__':
+    z = KerasSolver("KerasRegressor")
+    z.train([[1,3,4]], [5])
