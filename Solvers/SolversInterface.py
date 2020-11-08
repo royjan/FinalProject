@@ -7,6 +7,12 @@ class SolversInterface:
     def get_solvers(cls):
         return {class_obj.NAME: class_obj for class_obj in cls.__subclasses__()}
 
+    def load_from_json(self, config, y_train):
+        raise NotImplementedError
+
+    def export_to_json(self):
+        raise NotImplementedError
+
     @staticmethod
     def get_datetime_to_path():
         from datetime import datetime
@@ -31,7 +37,7 @@ class SolversInterface:
         with open(self.get_path(), 'wb') as file:
             pickle.dump(self.model_obj, file)
 
-    def train(self, train_x, train_y, *args, **kwargs):
+    def train(self, X_train, y_train, *args, **kwargs):
         raise NotImplementedError
 
     @classmethod

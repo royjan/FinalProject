@@ -5,7 +5,7 @@ class ScikitSolver(SolversInterface):
     NAME = "ScikitSolver"
 
     def __init__(self, model_name):
-        self.model_obj = self.get_model_by_name(model_name)
+        self.model_obj = self.get_model_by_name(model_name)()
 
     @staticmethod
     def get_supported_models():
@@ -20,16 +20,19 @@ class ScikitSolver(SolversInterface):
         }
         return models
 
-    def train(self, train_x, train_y, *args, **kwargs):
-        self.model_obj.fit(train_x, train_y, *args, **kwargs)
+    def train(self, X_train, y_train, *args, **kwargs):
+        self.model_obj.fit(X_train, y_train, *args, **kwargs)
 
-    def export_to_dict(self) -> dict:
-        import sklearn_json as skljson
-        return {"class_name": self.NAME, "model": skljson.to_dict(self.model_obj)}
+    def export_to_json(self):
+        from sklearn_json import serialize_model
+        import json
+        return {"class_name": self.NAME, "model": json.dumps(serialize_model(self.model_obj))}
 
-    def load_from_dict(self, serialized_model: dict):
-        import sklearn_json as skljson
-        self.model_obj = skljson.from_dict(serialized_model['model'])
+    def load_from_json(self, config, y_train):
+        from sklearn_json import deserialize_model
+        import json
+        model_dict = json.loads(config)
+        self.model_obj = deserialize_model(model_dict)
 
     def export_model_to_file(self):
         import sklearn_json as skljson
@@ -37,10 +40,9 @@ class ScikitSolver(SolversInterface):
 
 
 if __name__ == '__main__':
-
     z = ScikitSolver("LinearRegression")
     z.train([[1, 2, 3], [4, 5, 6]], [5, 7])
-    _dict = z.export_to_dict()
+    _dict = z.export_to_json()
     g = ScikitSolver("LinearRegression")
-    g.load_from_dict(_dict)
+    g.load_from_json(_dict['model'])
     print(g.model_obj.predict([[1, 2, 3]]))

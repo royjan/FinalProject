@@ -1,4 +1,3 @@
-import sklearn_json as skljson
 from Solvers.SolversInterface import SolversInterface
 
 
@@ -7,16 +6,14 @@ class KerasSolver(SolversInterface):
 
     @staticmethod
     def get_supported_models():
-        import tensorflow as tf
         models = {
-            "KerasRegressor": tf.keras.wrappers.scikit_learn.KerasRegressor,
-            "KerasClassifier": tf.keras.wrappers.scikit_learn.KerasClassifier
+            "Keras": None,
         }
         return models
 
-    def __init__(self, model_name):
+    def __init__(self):
         self.generator = None
-        self.model_obj = self.get_model_by_name(model_name)
+        self.optimizer_info = {'loss': 'binary_crossentropy', 'optimizer': 'adam', 'metrics': 'accuracy'}
 
     def build_image_generator(self):
         import tensorflow as tf
@@ -45,20 +42,116 @@ class KerasSolver(SolversInterface):
             dtype=None,
         )
 
-    def export_model_to_file(self):
-        skljson.to_json(self.model_obj, self.get_path())
-
-    def train(self, train_x, train_y, *args, **kwargs):
+    def train(self, X_train, y_train, *args, **kwargs):
         if self.generator:
-            return self.model_obj.fit_generator(self.generator.flow(train_x, train_y), *args, **kwargs)
-        return self.model_obj.fit(train_x, train_y, *args, **kwargs)
+            return self.model_obj.fit_generator(self.generator.flow(X_train, y_train), *args, **kwargs)
+        return self.model_obj.fit(X_train, y_train, epochs=1000)
 
-    def export_to_dict(self) -> dict:
-        return skljson.to_dict(self.model_obj)
+    def export_to_json(self):
+        return {"class_name": self.NAME, "model": self.model_obj.model.to_json(),
+                "optimizer": self.optimizer_info}
 
-    def load_from_dict(self, serialized_model: dict):
-        self.model_obj = skljson.from_dict(serialized_model)
+    def load_from_json(self, config, y_train):
+        import tensorflow
+        model = tensorflow.keras.models.model_from_json(config['model'])
+        model.compile(**self.get_optimize_settings(config, y_train))
+        self.model_obj = model
+
+    def get_optimize_settings(self, config, y) -> dict:
+        self.optimizer_info['loss'] = config.get('loss') or 'binary_crossentropy' if \
+            len(set(y)) > 2 else 'categorical_crossentropy'
+        self.optimizer_info['optimizer'] = config.get("optimizer") or self.optimizer_info['optimizer']
+        self.optimizer_info['metrics'] = config.get("metrics") or self.optimizer_info['metrics']
+        return self.optimizer_info
+
+    def predict(self, X):
+        return self.model_obj.predict(X)
+
 
 if __name__ == '__main__':
-    z = KerasSolver("KerasRegressor")
-    z.train([[1,3,4]], [5])
+    config = dict()
+    config['optimizer'] = {}
+    config['model'] = """{
+      "class_name": "Sequential",
+      "config": {
+        "name": "sequential",
+        "layers": [
+          {
+            "class_name": "InputLayer",
+            "config": {
+              "batch_input_shape": [
+                null,
+                3
+              ],
+              "dtype": "float32",
+              "sparse": false,
+              "ragged": false,
+              "name": "dense_input"
+            }
+          },
+          {
+            "class_name": "Dense",
+            "config": {
+              "name": "dense",
+              "trainable": true,
+              "batch_input_shape": [
+                null,
+                3
+              ],
+              "dtype": "float32",
+              "units": 64,
+              "activation": "relu",
+              "use_bias": true,
+              "kernel_initializer": {
+                "class_name": "GlorotUniform",
+                "config": {
+                  "seed": null
+                }
+              },
+              "bias_initializer": {
+                "class_name": "Zeros",
+                "config": {}
+              },
+              "kernel_regularizer": null,
+              "bias_regularizer": null,
+              "activity_regularizer": null,
+              "kernel_constraint": null,
+              "bias_constraint": null
+            }
+          },
+          {
+            "class_name": "Dense",
+            "config": {
+              "name": "dense_2",
+              "trainable": true,
+              "dtype": "float32",
+              "units": 1,
+              "activation": "sigmoid",
+              "use_bias": true,
+              "kernel_initializer": {
+                "class_name": "GlorotUniform",
+                "config": {
+                  "seed": null
+                }
+              },
+              "bias_initializer": {
+                "class_name": "Zeros",
+                "config": {}
+              },
+              "kernel_regularizer": null,
+              "bias_regularizer": null,
+              "activity_regularizer": null,
+              "kernel_constraint": null,
+              "bias_constraint": null
+            }
+          }
+        ]
+      },
+      "keras_version": "2.4.0",
+      "backend": "tensorflow"
+    }
+    """
+    z = KerasSolver()
+    z.load_from_json(config, [1])
+    z.train([[2, 4, 4]], [1])
+    print(z.predict([[2, 4, 4]]))

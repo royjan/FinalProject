@@ -58,17 +58,17 @@ class CeleryWorkerTask:
 @app.task
 def train(x, y, config):
     from Solvers.SolverFactory import SolverFactory
-    solver = SolverFactory.get_solver_by_name(config['class_name'])
-    solver = solver()
-    solver.load_from_dict(config)
-    solver.model.fit(x, y)
-    solver.export_to_dict()
+    from Solvers.SolversInterface import SolversInterface
+    solver: SolversInterface = SolverFactory.get_solver_by_name(config['class_name'])
+    solver.load_from_json(config, y)
+    solver.train(x, y)
+    solver.eport()
 
 
 if __name__ == '__main__':
     payload = {
         "class_name": "ScikitSolver",
         "model": "",
-     }
-    z = multi.s(x=[[1, 2, 3], [3, 4, 5], [5, 6, 7]], y=[1, 3, 5]).apply_async(queue='test-q')
+    }
+    z = train.s(x=[[1, 2, 3], [3, 4, 5], [5, 6, 7]], y=[1, 3, 5]).apply_async(queue='test-q')
     print(z)
