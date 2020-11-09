@@ -15,9 +15,9 @@ class SolverFactory:
         return SolversInterface.get_solvers()
 
     @staticmethod
-    def get_solver_by_name(solver_name):
+    def get_solver_by_name(config):
         solvers = SolverFactory.get_solvers()
-        solver = solvers.get(solver_name)
+        solver = solvers.get(config['class_name'])
         if solver:
-            return solver
-        raise ValueError(f"{solver_name} does not found!")
+            return solver(config['model_name'])
+        raise ValueError(f"for {config['solver_name']} there is no {config['model_name']}")

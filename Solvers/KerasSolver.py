@@ -11,7 +11,7 @@ class KerasSolver(SolversInterface):
         }
         return models
 
-    def __init__(self):
+    def __init__(self, model_name):
         self.generator = None
         self.optimizer_info = {'loss': 'binary_crossentropy', 'optimizer': 'adam', 'metrics': 'accuracy'}
 

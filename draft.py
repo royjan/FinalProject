@@ -23,7 +23,7 @@
 #
 payload = {
     "class_name": "ScikitSolver",
-    "model": "LinearRegression",
+    "model_name": "LinearRegression",
 }# from DataManager import DataManagement
 # from PreprocessData import PreprocessData
 #

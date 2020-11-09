@@ -58,7 +58,7 @@ class CeleryWorkerTask:
 def train(x, y, config):
     from FinalProject.Solvers.SolverFactory import SolverFactory
     from FinalProject.Solvers.SolversInterface import SolversInterface
-    solver: SolversInterface = SolverFactory.get_solver_by_name(config['class_name'])
+    solver: SolversInterface = SolverFactory.get_solver_by_name(config)
     solver.load_from_json(config, y)
     solver.train(x, y)
     print(solver.export_to_json())

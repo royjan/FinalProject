@@ -31,18 +31,9 @@ class ScikitSolver(SolversInterface):
     def load_from_json(self, config, y_train):
         from sklearn_json import deserialize_model
         import json
-        model_dict = json.loads(config)
+        model_dict = json.loads(config['model'])
         self.model_obj = deserialize_model(model_dict)
 
     def export_model_to_file(self):
         import sklearn_json as skljson
         skljson.to_json(self.model_obj, self.get_path())
-
-
-if __name__ == '__main__':
-    z = ScikitSolver("LinearRegression")
-    z.train([[1, 2, 3], [4, 5, 6]], [5, 7])
-    _dict = z.export_to_json()
-    g = ScikitSolver("LinearRegression")
-    g.load_from_json(_dict['model'])
-    print(g.model_obj.predict([[1, 2, 3]]))
