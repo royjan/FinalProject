@@ -24,7 +24,7 @@ class SolversInterface:
         try:
             return models[model_name]
         except KeyError:
-            from Log.Logger import Logger, Severity
+            from FinalProject.Log.Logger import Logger, Severity
             Logger.print(f"{model_name} doesn't define", severity=Severity.ERROR)
             raise ValueError("Model not found please check yourself!")
 

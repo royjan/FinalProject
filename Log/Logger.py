@@ -1,7 +1,7 @@
 from dictalchemy import make_class_dictable
 from sqlalchemy import Integer, Column, DateTime, String, func
 from sqlalchemy.ext.declarative import declarative_base
-from DBManager import DBManager
+from FinalProject.DBManager import DBManager
 
 Base = declarative_base()
 make_class_dictable(Base)
@@ -26,6 +26,7 @@ class Logger(Base):
 
     @classmethod
     def print(cls, msg, severity=Severity.DEBUG):
+        msg = str(msg)
         print(f"{severity}: {msg}")
         DBManager.get_session().execute(cls.__table__.insert().values(msg=msg, severity=severity))
         DBManager.get_session().commit()

@@ -2,14 +2,13 @@
 
 from celery import Celery
 from kombu import Queue
-
-from DBManager import DBManager
-from DataManager import DataManagement
+from FinalProject.DBManager import DBManager
+from FinalProject.DataManager import DataManagement
 
 broker_url = 'amqp://worker:kingkingking@18.193.6.223:32781/rhost'
 app = Celery('CeleryWorkerTask', broker=broker_url)
 
-app.conf.task_queues = [Queue('test-q', durable=False, routing_key='test-q')]
+app.conf.task_queues = [Queue('test', durable=True, routing_key='test')]
 
 
 @app.task
@@ -57,18 +56,13 @@ class CeleryWorkerTask:
 
 @app.task
 def train(x, y, config):
-    from Solvers.SolverFactory import SolverFactory
-    from Solvers.SolversInterface import SolversInterface
+    from FinalProject.Solvers.SolverFactory import SolverFactory
+    from FinalProject.Solvers.SolversInterface import SolversInterface
     solver: SolversInterface = SolverFactory.get_solver_by_name(config['class_name'])
     solver.load_from_json(config, y)
     solver.train(x, y)
-    solver.eport()
+    print(solver.export_to_json())
 
 
 if __name__ == '__main__':
-    payload = {
-        "class_name": "ScikitSolver",
-        "model": "",
-    }
-    z = train.s(x=[[1, 2, 3], [3, 4, 5], [5, 6, 7]], y=[1, 3, 5]).apply_async(queue='test-q')
-    print(z)
+    app.worker_main(['worker', '-Q test', '--loglevel=INFO'])

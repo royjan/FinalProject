@@ -2,8 +2,8 @@ import os
 
 import pandas as pd
 
-from DBManager import DBManager
-from PreprocessData import PreprocessData
+from FinalProject.DBManager import DBManager
+from FinalProject.PreprocessData import PreprocessData
 
 
 class DataManagement:

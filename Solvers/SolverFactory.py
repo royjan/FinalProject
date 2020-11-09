@@ -5,11 +5,13 @@ class SolverFactory:
 
     @staticmethod
     def get_solvers() -> dict:
-        from Solvers.SolversInterface import SolversInterface
+        from FinalProject.Solvers.SolversInterface import SolversInterface
         import os
-        modules = [classname[:-3] for classname in os.listdir(os.path.join(os.getcwd())) if not classname.startswith("_")]#, "Solvers"))]
+        modules = [classname[:-3] for classname in os.listdir(os.path.join(os.getcwd(), "FinalProject/Solvers")) if
+                   not classname.startswith("_")]
         for solver in modules:
-            importlib.import_module(f"Solvers.{solver}")
+            if solver not in ['SolverFactory', 'SolversInterface']:
+                importlib.import_module(f"FinalProject.Solvers.{solver}")
         return SolversInterface.get_solvers()
 
     @staticmethod
@@ -19,4 +21,3 @@ class SolverFactory:
         if solver:
             return solver
         raise ValueError(f"{solver_name} does not found!")
-
