@@ -66,3 +66,4 @@ def train(x, y, config):
 
 if __name__ == '__main__':
     app.worker_main(['worker', '-Q test', '--loglevel=INFO'])
+    # celery -A FinalProject.CeleryWorkerTask worker -Q test --loglevel=INFO

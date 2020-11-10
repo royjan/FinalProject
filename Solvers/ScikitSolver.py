@@ -29,10 +29,10 @@ class ScikitSolver(SolversInterface):
         return {"class_name": self.NAME, "model": json.dumps(serialize_model(self.model_obj))}
 
     def load_from_json(self, config, y_train):
-        from sklearn_json import deserialize_model
         import json
         model_dict = json.loads(config['model'])
-        self.model_obj = deserialize_model(model_dict)
+        for key, value in model_dict.items():
+            setattr(self.model_obj, key, value)
 
     def export_model_to_file(self):
         import sklearn_json as skljson

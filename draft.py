@@ -24,7 +24,8 @@
 payload = {
     "class_name": "ScikitSolver",
     "model_name": "LinearRegression",
-}# from DataManager import DataManagement
+    "model": '{"n_jobs":-1}'
+}  # from DataManager import DataManagement
 # from PreprocessData import PreprocessData
 #
 # if __name__ == '__main__':
@@ -49,6 +50,6 @@ payload = {
 #
 #
 from FinalProject.CeleryWorkerTask import train
+
 z = train.s(x=[[1, 2, 3], [3, 4, 5], [5, 6, 7]], y=[1, 3, 5], config=payload).apply_async(queue='test')
 print(z)
-
