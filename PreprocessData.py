@@ -4,6 +4,8 @@ from typing import Union, Iterable
 import numpy as np
 import pandas as pd
 
+from FinalProject.Log.Logger import Logger
+
 
 class PreprocessData:
     TEST_COLUMN = "marked_as_test"
@@ -24,14 +26,31 @@ class PreprocessData:
         self.df = None
         self.label = label
         self.title = title
+        self.X = None
+        self.y = None
+        self.smote = False
+
+    def get_y(self) -> pd.Series:
+        if self.y is None:
+            return self.df[self.label]
+        return self.y
+
+    def get_X(self) -> pd.DataFrame:
+        if self.X is None:
+            return self.delete_column(self.df, self.label)
+        return self.X
 
     @property
-    def y(self) -> pd.Series:
-        return self.df[self.label]
+    def num_of_classes(self):
+        return len(set(self.get_y()))
 
-    @property
-    def X(self) -> pd.DataFrame:
-        return self.delete_column(self.df, self.label)
+    def apply_smote(self):
+        from imblearn.over_sampling import SMOTE
+        sm = SMOTE(random_state=42, k_neighbors=self.num_of_classes)
+        try:
+            self.X, self.y = sm.fit_sample(self.get_X(), self.get_y())
+        except ValueError:
+            Logger.print("Too many differences between the classes.")
 
     @staticmethod
     def delete_column(df: pd.DataFrame, columns: Union[str, Iterable]) -> pd.DataFrame:

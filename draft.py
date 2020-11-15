@@ -23,88 +23,88 @@
 #
 payload = [
     {"class_name": "ScikitSolver",
-    "model_name": "LinearRegression",
-    "model": '{"n_jobs":-1}'},
+     "model_name": "LinearRegression",
+     "model": '{"n_jobs":-1}'},
     {"class_name": "KerasSolver", "model_name": "", "model":
-    """{
-          "class_name": "Sequential",
-          "config": {
-            "name": "sequential",
-            "layers": [
-              {
-                "class_name": "InputLayer",
-                "config": {
-                  "batch_input_shape": [
-                    null,
-                    3
-                  ],
-                  "dtype": "float32",
-                  "sparse": false,
-                  "name": "dense_input"
-                }
-              },
-              {
-                "class_name": "Dense",
-                "config": {
-                  "name": "dense",
-                  "trainable": true,
-                  "batch_input_shape": [
-                    null,
-                    3
-                  ],
-                  "dtype": "float32",
-                  "units": 3,
-                  "activation": "relu",
-                  "use_bias": true,
-                  "kernel_initializer": {
-                    "class_name": "GlorotUniform",
+        """{
+              "class_name": "Sequential",
+              "config": {
+                "name": "sequential",
+                "layers": [
+                  {
+                    "class_name": "InputLayer",
                     "config": {
-                      "seed": null
+                      "batch_input_shape": [
+                        null,
+                        3
+                      ],
+                      "dtype": "float32",
+                      "sparse": false,
+                      "name": "dense_input"
                     }
                   },
-                  "bias_initializer": {
-                    "class_name": "Zeros",
-                    "config": {}
-                  },
-                  "kernel_regularizer": null,
-                  "bias_regularizer": null,
-                  "activity_regularizer": null,
-                  "kernel_constraint": null,
-                  "bias_constraint": null
-                }
-              },
-              {
-                "class_name": "Dense",
-                "config": {
-                  "name": "dense_2",
-                  "trainable": true,
-                  "dtype": "float32",
-                  "units": 1,
-                  "activation": "sigmoid",
-                  "use_bias": true,
-                  "kernel_initializer": {
-                    "class_name": "GlorotUniform",
+                  {
+                    "class_name": "Dense",
                     "config": {
-                      "seed": null
+                      "name": "dense",
+                      "trainable": true,
+                      "batch_input_shape": [
+                        null,
+                        3
+                      ],
+                      "dtype": "float32",
+                      "units": 3,
+                      "activation": "relu",
+                      "use_bias": true,
+                      "kernel_initializer": {
+                        "class_name": "GlorotUniform",
+                        "config": {
+                          "seed": null
+                        }
+                      },
+                      "bias_initializer": {
+                        "class_name": "Zeros",
+                        "config": {}
+                      },
+                      "kernel_regularizer": null,
+                      "bias_regularizer": null,
+                      "activity_regularizer": null,
+                      "kernel_constraint": null,
+                      "bias_constraint": null
                     }
                   },
-                  "bias_initializer": {
-                    "class_name": "Zeros",
-                    "config": {}
-                  },
-                  "kernel_regularizer": null,
-                  "bias_regularizer": null,
-                  "activity_regularizer": null,
-                  "kernel_constraint": null,
-                  "bias_constraint": null
-                }
-              }
-            ]
-          },
-          "keras_version": "2.4.0",
-          "backend": "tensorflow"
-        }
-        """}]
+                  {
+                    "class_name": "Dense",
+                    "config": {
+                      "name": "dense_2",
+                      "trainable": true,
+                      "dtype": "float32",
+                      "units": 1,
+                      "activation": "sigmoid",
+                      "use_bias": true,
+                      "kernel_initializer": {
+                        "class_name": "GlorotUniform",
+                        "config": {
+                          "seed": null
+                        }
+                      },
+                      "bias_initializer": {
+                        "class_name": "Zeros",
+                        "config": {}
+                      },
+                      "kernel_regularizer": null,
+                      "bias_regularizer": null,
+                      "activity_regularizer": null,
+                      "kernel_constraint": null,
+                      "bias_constraint": null
+                    }
+                  }
+                ]
+              },
+              "keras_version": "2.4.0",
+              "backend": "tensorflow"
+            }
+            """}]
 # from DataManager import DataManagement
 # from PreprocessData import PreprocessData
 #
@@ -129,10 +129,20 @@ payload = [
 #     dm.df_to_db()
 #
 #
-from FinalProject.CeleryWorkerTask import train,test_print
+# from FinalProject.CeleryWorkerTask import train,test_print
+#
+# group = [train.s(x=[[1, 2, 3], [3, 4, 5], [5, 6, 7]], y=[1, 3, 5], config=_p) for _p in payload]
+# from FinalProject.CeleryUtils import CeleryUtils
+# z = CeleryUtils.create_chords(group, test_print)
+# z.apply_async(queue='test')
+# print("asd")
+if __name__ == '__main__':
+    from imblearn.over_sampling import SMOTE
 
-group = [train.s(x=[[1, 2, 3], [3, 4, 5], [5, 6, 7]], y=[1, 3, 5], config=_p) for _p in payload]
-from FinalProject.CeleryUtils import CeleryUtils
-z = CeleryUtils.create_chords(group, test_print)
-z.apply_async(queue='test')
-print("asd")
+    x = [[1], [1], [1], [4], [2], [3], [4], [2], [3], [4]]
+    y = [1, 1, 1, 2, 2, 2, 2, 2, 2, 2]
+    sm = SMOTE(random_state=42, k_neighbors=2)
+    print(len(x))
+    print(len(y))
+    new_x, new_y = sm.fit_sample(x, y)
+    print(f"{new_x}\n{new_y}")
