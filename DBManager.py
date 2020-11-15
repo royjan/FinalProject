@@ -18,6 +18,10 @@ class DBManager:
     db_scoped_session = scoped_session(db_session_maker)
 
     @classmethod
+    def get_path(cls):
+        return f'{cls.user_name}:{cls.password}@{cls.url}:{cls.port}/{cls.scheme}'
+
+    @classmethod
     def get_session(cls):
         return cls.db_scoped_session()
 

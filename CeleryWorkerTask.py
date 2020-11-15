@@ -6,7 +6,8 @@ from FinalProject.DBManager import DBManager
 from FinalProject.DataManager import DataManagement
 
 broker_url = 'amqp://worker:kingkingking@18.193.6.223:32781/rhost'
-app = Celery('CeleryWorkerTask', broker=broker_url)
+backend_url = f'db+postgresql+psycopg2://{DBManager.get_path()}'
+app = Celery('CeleryWorkerTask', broker=broker_url, backend=backend_url)
 
 app.conf.task_queues = [Queue('test', durable=True, routing_key='test')]
 
@@ -14,6 +15,12 @@ app.conf.task_queues = [Queue('test', durable=True, routing_key='test')]
 @app.task
 def add(x, y):
     return x + y
+
+
+@app.task
+def test_print(*args):
+    print("TEUaSPOUSAPOUSAOPUASD")
+    print(args)
 
 
 class CeleryWorkerTask:
@@ -62,8 +69,3 @@ def train(x, y, config):
     solver.load_from_json(config, y)
     solver.train(x, y)
     print(solver.export_to_json())
-
-
-if __name__ == '__main__':
-    app.worker_main(['worker', '-Q test', '--loglevel=INFO'])
-    # celery -A FinalProject.CeleryWorkerTask worker -Q test --loglevel=INFO

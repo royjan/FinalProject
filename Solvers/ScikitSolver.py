@@ -21,6 +21,8 @@ class ScikitSolver(SolversInterface):
         return models
 
     def train(self, X_train, y_train, *args, **kwargs):
+        import time
+        time.sleep(10)
         self.model_obj.fit(X_train, y_train, *args, **kwargs)
 
     def export_to_json(self):

@@ -25,7 +25,7 @@ class DataManagement:
         return self._table
 
     def df_to_db(self, delete_local_file=False):
-        from DBManager import DBManager
+        from FinalProject.DBManager import DBManager
         self.df.to_sql(self.table_name, con=DBManager.engine)
         if delete_local_file:
             try:

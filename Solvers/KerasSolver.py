@@ -13,7 +13,7 @@ class KerasSolver(SolversInterface):
 
     def __init__(self, model_name):
         self.generator = None
-        self.optimizer_info = {'loss': 'binary_crossentropy', 'optimizer': 'adam', 'metrics': 'accuracy'}
+        self.optimizer_info = {'loss': 'binary_crossentropy', 'optimizer': 'adam', 'metrics': ['accuracy']}
 
     def build_image_generator(self):
         import tensorflow as tf
@@ -43,18 +43,21 @@ class KerasSolver(SolversInterface):
         )
 
     def train(self, X_train, y_train, *args, **kwargs):
+        import numpy as np
         if self.generator:
             return self.model_obj.fit_generator(self.generator.flow(X_train, y_train), *args, **kwargs)
-        return self.model_obj.fit(X_train, y_train, epochs=1000)
+        X_train = np.array(X_train)
+        return self.model_obj.fit(X_train, y_train, epochs=3)
 
     def export_to_json(self):
-        return {"class_name": self.NAME, "model": self.model_obj.model.to_json(),
+        return {"class_name": self.NAME, "model": self.model_obj.to_json(),
                 "optimizer": self.optimizer_info}
 
     def load_from_json(self, config, y_train):
         import tensorflow
         model = tensorflow.keras.models.model_from_json(config['model'])
-        model.compile(**self.get_optimize_settings(config, y_train))
+        model.compile(**self.get_optimize_settings({}, y_train))
+        model.summary()
         self.model_obj = model
 
     def get_optimize_settings(self, config, y) -> dict:
@@ -99,7 +102,7 @@ if __name__ == '__main__':
                 3
               ],
               "dtype": "float32",
-              "units": 64,
+              "units": 3,
               "activation": "relu",
               "use_bias": true,
               "kernel_initializer": {
@@ -151,7 +154,4 @@ if __name__ == '__main__':
       "backend": "tensorflow"
     }
     """
-    z = KerasSolver()
-    z.load_from_json(config, [1])
-    z.train([[2, 4, 4]], [1])
-    print(z.predict([[2, 4, 4]]))
+
