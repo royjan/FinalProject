@@ -29,6 +29,7 @@ class PreprocessData:
         self.X = None
         self.y = None
         self.smote = False
+        self.filter_features = False
 
     def get_y(self) -> pd.Series:
         if self.y is None:
@@ -45,12 +46,29 @@ class PreprocessData:
         return len(set(self.get_y()))
 
     def apply_smote(self):
+        """
+        if there is imbalance between classes, SMOTE is an intelligence way to avoid overfitting for one class only
+        """
         from imblearn.over_sampling import SMOTE
         sm = SMOTE(random_state=42, k_neighbors=self.num_of_classes)
         try:
             self.X, self.y = sm.fit_sample(self.get_X(), self.get_y())
         except ValueError:
             Logger.print("Too many differences between the classes.")
+
+    def filter_features(self, method):
+        """
+        function to drop unnecessary columns by median, mean or half
+        """
+        cor = self.df.corr()
+        cor_target = abs(cor[self.label])
+        if method == "mean":
+            irrelevant_features = cor_target[cor_target < cor_target.mean()]
+        elif method == "median":
+            irrelevant_features = cor_target[cor_target < cor_target.median()]
+        else:
+            irrelevant_features = cor_target[cor_target < 0.5]
+        self.df = self.delete_column(self.df, irrelevant_features)
 
     @staticmethod
     def delete_column(df: pd.DataFrame, columns: Union[str, Iterable]) -> pd.DataFrame:
@@ -103,6 +121,9 @@ class PreprocessData:
         return df
 
     def analyze_profile(self):
+        """
+        This function export an HTML file of data's report
+        """
         from pandas_profiling import ProfileReport
         import webbrowser
         path_to_export = f"export/{self.title.lower()}.html"
@@ -111,6 +132,9 @@ class PreprocessData:
         webbrowser.open('file://' + os.path.realpath(path_to_export))
 
     def split_train_test(self):
+        """
+        A clever way to split train test by appearances
+        """
         from random import choices
         percentage = 0.2
         long_tail = None
