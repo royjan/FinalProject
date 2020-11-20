@@ -129,9 +129,9 @@ payload = [
 #     dm.df_to_db()
 #
 #
-# from FinalProject.CeleryWorkerTask import train,test_print
+# from FinalProject.CeleryWorkerTask import train_worker,test_print
 #
-# group = [train.s(x=[[1, 2, 3], [3, 4, 5], [5, 6, 7]], y=[1, 3, 5], config=_p) for _p in payload]
+# group = [train_worker.s(x=[[1, 2, 3], [3, 4, 5], [5, 6, 7]], y=[1, 3, 5], config=_p) for _p in payload]
 # from FinalProject.CeleryUtils import CeleryUtils
 # z = CeleryUtils.create_chords(group, test_print)
 # z.apply_async(queue='test')
