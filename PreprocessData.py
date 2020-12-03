@@ -3,7 +3,6 @@ from typing import Union, Iterable
 
 import numpy as np
 import pandas as pd
-
 from FinalProject.Log.Logger import Logger
 
 
@@ -21,7 +20,7 @@ class PreprocessData:
         def manipulate(series: pd.Series, function):
             return function(series)
 
-    def __init__(self, path: str, label="label", title="test"):
+    def __init__(self, path: list, label="label", title="test"):
         self.path = path
         self.df = None
         self.label = label
@@ -90,20 +89,44 @@ class PreprocessData:
             self.df = pd.concat([self.df, temp_df], axis=1)
             self.df = self.delete_column(self.df, column)
 
-    def load_data_from_file(self):
-        """
-        this function reads file path to a dataframe data structure
-        """
-        if not os.path.isfile(self.path):
-            raise FileNotFoundError("File not found!")
-        if self.path.endswith("xls") or self.path.endswith("xlsx"):
-            self.df = pd.read_excel(self.path, index_col=False)
-        elif self.path.endswith("csv"):
-            self.df = pd.read_csv(self.path, index_col=False)
-        elif self.path.endswith("pkl"):
-            self.df = pd.read_pickle(self.path)
+    def is_data_splitted(self):
+        return len(self.path) > 1
+
+    def set_data(self):
+        if self.is_data_splitted():
+            train = self.load_data_from_file(self.train_path)
+            train[TEST_COLUMN] = False
+            test = self.load_data_from_file(self.test_path)
+            test[TEST_COLUMN] = True
+            self.df = train.append(test)
+            self.df.reset_index(drop=True, inplace=True)
         else:
-            raise TypeError("File not supported! Only Excel, CSV and PKL!")
+            self.df = self.load_data_from_file(self.train_path)
+
+    @property
+    def train_path(self):
+        return self.path[0]
+
+    @property
+    def test_path(self):
+        if self.is_data_splitted():
+            return self.path[1]
+        return None
+
+    @staticmethod
+    def load_data_from_file(path):
+        """
+        :param: path - file location in project
+        """
+        if not os.path.isfile(path):
+            raise FileNotFoundError(f"File not found! - {path}")
+        if path.endswith("xls") or self.path.endswith("xlsx"):
+            return pd.read_excel(path, index_col=False)
+        elif path.endswith("csv"):
+            return pd.read_csv(path, index_col=False)
+        elif path.endswith("pkl"):
+            return pd.read_pickle(path)
+        raise TypeError("File not supported! Only Excel, CSV and PKL!")
 
     def nan_handle(self, settings: PreprocessDataSettings) -> pd.DataFrame:
         """
@@ -147,3 +170,5 @@ class PreprocessData:
                 lst_to_test.extend(item)
         for index in lst_to_test:
             self.df.at[index, self.TEST_COLUMN] = True
+
+
