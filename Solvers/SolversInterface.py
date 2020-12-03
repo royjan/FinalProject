@@ -2,6 +2,7 @@ class SolversInterface:
     model_obj = None
     NAME = "SolversInterface"
     EXTENSION = "json"
+    score = 0
 
     @classmethod
     def get_solvers(cls):

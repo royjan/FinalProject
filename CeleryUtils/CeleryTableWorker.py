@@ -29,6 +29,10 @@ class CeleryTableWorker(Base):
     def create_db(cls):
         cls.__table__.create(DBManager.engine)
 
+    @classmethod
+    def get_workers_by_agent_id(cls, agent_id):
+        return DBManager.get_session().query(cls).filter_by(cls.agent_id == agent_id).all()
+
 
 if __name__ == '__main__':
     CeleryTableWorker.create_db()
