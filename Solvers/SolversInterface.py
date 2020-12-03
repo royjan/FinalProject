@@ -14,6 +14,11 @@ class SolversInterface:
         raise NotImplementedError
 
     @staticmethod
+    def calculate_score(y_test, y_pred):
+        from sklearn.metrics import roc_auc_score
+        return roc_auc_score(y_test, y_pred)
+
+    @staticmethod
     def get_datetime_to_path():
         from datetime import datetime
         return datetime.now().strftime("%d%m%Y_%H%M")
