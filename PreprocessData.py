@@ -12,9 +12,9 @@ class PreprocessData:
     class PreprocessDataSettings:
         math_function = {'mean': np.nanmean, 'median': np.nanmedian, 'drop': None}
 
-        def __init__(self):
-            self.nan_math_function = None  # {column: function}
-            self.drop_columns = False
+        def __init__(self, drop_columns=False):
+            self.nan_math_function = dict()  # {column: function}
+            self.drop_columns = drop_columns
 
         @staticmethod
         def manipulate(series: pd.Series, function):
@@ -28,7 +28,7 @@ class PreprocessData:
         self.X = None
         self.y = None
         self.smote = False
-        self.filter_features = False
+        self._filter_features = False
 
     def get_y(self) -> pd.Series:
         if self.y is None:
@@ -52,8 +52,13 @@ class PreprocessData:
         sm = SMOTE(random_state=42, k_neighbors=self.num_of_classes)
         try:
             self.X, self.y = sm.fit_sample(self.get_X(), self.get_y())
+            self.replace_x_y()
         except ValueError:
             Logger.print("Too many differences between the classes.")
+
+    def replace_x_y(self):
+        self.df = self.X
+        self.df[self.label] = self.y
 
     def filter_features(self, method):
         """
@@ -95,13 +100,14 @@ class PreprocessData:
     def set_data(self):
         if self.is_data_splitted():
             train = self.load_data_from_file(self.train_path)
-            train[TEST_COLUMN] = False
+            train[self.TEST_COLUMN] = False
             test = self.load_data_from_file(self.test_path)
-            test[TEST_COLUMN] = True
+            test[self.TEST_COLUMN] = True
             self.df = train.append(test)
             self.df.reset_index(drop=True, inplace=True)
         else:
             self.df = self.load_data_from_file(self.train_path)
+            self.split_train_test()
 
     @property
     def train_path(self):
@@ -120,7 +126,7 @@ class PreprocessData:
         """
         if not os.path.isfile(path):
             raise FileNotFoundError(f"File not found! - {path}")
-        if path.endswith("xls") or self.path.endswith("xlsx"):
+        if path.endswith("xls") or path.endswith("xlsx"):
             return pd.read_excel(path, index_col=False)
         elif path.endswith("csv"):
             return pd.read_csv(path, index_col=False)
@@ -134,11 +140,10 @@ class PreprocessData:
         :return: dataframe after manipulation
         """
         df = self.df.copy()
-        if not settings.nan_math_function:
-            return df
-        for column, function in settings.nan_math_function:
-            new_value = settings.manipulate(df[column], function)
-            df[column] = df[column].fillna(new_value)
+        if settings.nan_math_function:
+            for column, function in settings.nan_math_function.items():
+                new_value = settings.manipulate(df[column], function)
+                df[column] = df[column].fillna(new_value)
         if settings.drop_columns:
             df = df.dropna(how='any')
         return df
@@ -172,3 +177,14 @@ class PreprocessData:
             self.df.at[index, self.TEST_COLUMN] = True
 
 
+if __name__ == '__main__':
+    from collections import Counter
+    pp = PreprocessData(path=['data/train.csv', 'data/test.csv'], label='Pclass')
+    pp.set_data()
+    pp.df = pp.delete_column(pp.df, ['PassengerId', 'Name', 'Cabin', 'Ticket'])
+    pp.one_hot_encode(['Sex', 'Embarked'])
+    pp_settings = PreprocessData.PreprocessDataSettings(drop_columns=True)
+    pp.df = pp.nan_handle(pp_settings)
+    print(Counter(pp.df[pp.label]))
+    pp.apply_smote()
+    print(Counter(pp.df[pp.label]))

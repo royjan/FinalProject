@@ -47,6 +47,7 @@ class KerasSolver(SolversInterface):
         if self.generator:
             return self.model_obj.fit_generator(self.generator.flow(X_train, y_train), *args, **kwargs)
         X_train = np.array(X_train)
+        y_train = np.array(y_train)
         return self.model_obj.fit(X_train, y_train, epochs=3)
 
     def export_to_json(self):

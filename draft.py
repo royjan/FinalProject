@@ -129,20 +129,10 @@ payload = [
 #     dm.df_to_db()
 #
 #
-# from FinalProject.CeleryWorkerTask import train_worker,test_print
-#
-# group = [train_worker.s(x=[[1, 2, 3], [3, 4, 5], [5, 6, 7]], y=[1, 3, 5], config=_p) for _p in payload]
-# from FinalProject.CeleryUtils import CeleryUtils
-# z = CeleryUtils.create_chords(group, test_print)
-# z.apply_async(queue='test')
-# print("asd")
-if __name__ == '__main__':
-    from imblearn.over_sampling import SMOTE
+from FinalProject.CeleryWorkerTask import train_worker,test_print
 
-    x = [[1], [1], [1], [4], [2], [3], [4], [2], [3], [4]]
-    y = [1, 1, 1, 2, 2, 2, 2, 2, 2, 2]
-    sm = SMOTE(random_state=42, k_neighbors=2)
-    print(len(x))
-    print(len(y))
-    new_x, new_y = sm.fit_sample(x, y)
-    print(f"{new_x}\n{new_y}")
+group = [train_worker.s(x=[[1, 2, 3], [3, 4, 5], [5, 6, 7]], y=[1, 3, 5], config=_p, agent_id='1') for _p in payload]
+from FinalProject.CeleryUtils import CeleryUtils
+z = CeleryUtils.create_chords(group, test_print)
+z.apply_async(queue='test')
+print("asd")

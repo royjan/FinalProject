@@ -7,7 +7,10 @@ class SolverFactory:
     def get_solvers() -> dict:
         from FinalProject.Solvers.SolversInterface import SolversInterface
         import os
-        modules = [classname[:-3] for classname in os.listdir(os.path.join(os.getcwd(), "FinalProject/Solvers")) if
+        root_path = "Solvers"
+        if False:
+            root_path = os.path.join("FinalProject", root_path)
+        modules = [classname[:-3] for classname in os.listdir(os.path.join(os.getcwd(), root_path)) if
                    not classname.startswith("_")]
         for solver in modules:
             if solver not in ['SolverFactory', 'SolversInterface']:

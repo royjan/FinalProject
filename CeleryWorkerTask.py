@@ -68,8 +68,9 @@ class CeleryWorkerTask:
 
 @app.task(bind=True)
 def train_worker(self, x, y, agent_id, config: dict):
-    from FinalProject.CeleryUtils.CeleryTableWorker import Statuses
-    worker_info = dict(task_id=self.task_id, status=Statuses.STARTED, agent_id=agent_id, model_settings=config)
+    my_task_id = self.request.id
+    from FinalProject.CeleryUtils.CeleryTableWorker import Statuses, CeleryTableWorker
+    worker = CeleryTableWorker(task_id=my_task_id, status=Statuses.STARTED, agent_id=agent_id, model_settings=config)
     # session.merge(obj)
     try:
         from FinalProject.Solvers.SolverFactory import SolverFactory
@@ -78,13 +79,14 @@ def train_worker(self, x, y, agent_id, config: dict):
         solver: SolversInterface = SolverFactory.get_solver_by_name(config)
         solver.load_from_json(config, y)
         solver.train(x, y)
-        # score = solver.calculate_score(y_test, t_pred)
-        worker_info = dict(task_id=self.task_id, status='Finish', agent_id=agent_id)
-        # session.merge(obj)
+        # score = solver.calculate_score()
+        worker.status = Statuses.FINISHED
         print(solver.export_to_json())
     except Exception as ex:
-        Logger.print(f'an error in train worker. agent_id={agent_id} | task_id={self.task_id}\nError:{repr(ex)}',
-                     severity=Severity.ERROR, task_id=self.task_id, task_type='Worker')
-        # worker['status'] = Statuses.FAILED
-        # worker.update()
-    return {"status": Statuses.SUCCESSED}
+        worker.status = Statuses.FAILED
+        Logger.print(f'an error in train worker. agent_id={agent_id} | task_id={my_task_id}\nError:{repr(ex)}',
+                     severity=Severity.ERROR, task_id=my_task_id, task_type='Worker')
+    finally:
+        DBManager.get_session().merge(worker)
+        DBManager.get_session().commit()
+    return {"status": worker.status}
