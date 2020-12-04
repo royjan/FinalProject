@@ -5,6 +5,8 @@ from FinalProject.DataManager import DataManagement
 from celery import Celery
 from kombu import Queue
 
+from FinalProject.Log.Logger import Logger, Severity
+
 broker_url = 'amqp://worker:kingkingking@18.193.6.223:32781/rhost'
 backend_url = f'db+postgresql+psycopg2://{DBManager.get_path()}'
 app = Celery('CeleryWorkerTask', broker=broker_url, backend=backend_url)
@@ -24,6 +26,7 @@ def test_print(self, *args):
     models = [result.model for result in get_celery_results]
     best_model = sorted(models, lambda x: x.score, reverse=True)[0]
     return best_model
+
 
 class CeleryWorkerTask:
     def __init__(self):
@@ -63,28 +66,25 @@ class CeleryWorkerTask:
         return self.df[self.label]
 
 
-@app.task
-def train_worker(x, y, config):
-    from FinalProject.Solvers.SolverFactory import SolverFactory
-    from FinalProject.Solvers.SolversInterface import SolversInterface
-    solver: SolversInterface = SolverFactory.get_solver_by_name(config)
-    solver.load_from_json(config, y)
-    solver.train(x, y)
-    score = solver.calculate_auc()
-    print(solver.export_to_json())
-    return score
-
-
-if __name__ == '__main__':
-    class A:
-        pass
-
-
-    a = A()
-    a.y = 7
-    b = A()
-    b.y = 4
-    c = A()
-    c.y = 5
-    lst = [a, b, c]
-    print([x.y for x in sorted(lst, key=lambda x:x.y)])
+@app.task(bind=True)
+def train_worker(self, x, y, agent_id, config: dict):
+    from FinalProject.CeleryUtils.CeleryTableWorker import Statuses
+    worker_info = dict(task_id=self.task_id, status=Statuses.STARTED, agent_id=agent_id, model_settings=config)
+    # session.merge(obj)
+    try:
+        from FinalProject.Solvers.SolverFactory import SolverFactory
+        from FinalProject.Solvers.SolversInterface import SolversInterface
+        from FinalProject.CeleryUtils import CeleryTableWorker
+        solver: SolversInterface = SolverFactory.get_solver_by_name(config)
+        solver.load_from_json(config, y)
+        solver.train(x, y)
+        # score = solver.calculate_score(y_test, t_pred)
+        worker_info = dict(task_id=self.task_id, status='Finish', agent_id=agent_id)
+        # session.merge(obj)
+        print(solver.export_to_json())
+    except Exception as ex:
+        Logger.print(f'an error in train worker. agent_id={agent_id} | task_id={self.task_id}\nError:{repr(ex)}',
+                     severity=Severity.ERROR, task_id=self.task_id, task_type='Worker')
+        # worker['status'] = Statuses.FAILED
+        # worker.update()
+    return {"status": Statuses.SUCCESSED}

@@ -25,10 +25,11 @@ class Logger(Base):
     msg = Column("msg", String(255), quote=True)
 
     @classmethod
-    def print(cls, msg, severity=Severity.DEBUG):
+    def print(cls, msg, severity=Severity.DEBUG, task_id=None, task_type=None):
         msg = str(msg)
         print(f"{severity}: {msg}")
-        DBManager.get_session().execute(cls.__table__.insert().values(msg=msg, severity=severity))
+        DBManager.get_session().execute(
+            cls.__table__.insert().values(msg=msg, severity=severity, task_id=task_id, task_type=task_type))
         DBManager.get_session().commit()
 
     @classmethod

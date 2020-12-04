@@ -9,16 +9,16 @@ from FinalProject.DBManager import DBManager
 Base = declarative_base()
 make_class_dictable(Base)
 
-
-class Status(Enum):
-    WIP = "Work In Progress"
+class Statuses:
+    SUCCESSED = "Successed"
     FAILED = "Failed"
-    SUCCESS = "Success"
+    FINISHED = "Finished"
+    STARTED = "Started"
 
 
 class CeleryTableWorker(Base):
     __tablename__ = "workers"
-    task_id = Column("task_id", Integer, quote=True, autoincrement=True, primary_key=True)
+    task_id = Column("task_id", Integer, quote=True, primary_key=True)
     status = Column("status", String(255), quote=True)
     created_date = Column("created_date", DateTime(timezone=True), quote=True, server_default=func.now())
     agent_id = Column("agent_id", Integer, quote=True, nullable=False)
