@@ -1,19 +1,12 @@
-from enum import Enum
-
 from dictalchemy import make_class_dictable
 from sqlalchemy import Integer, Column, DateTime, String, func
 from sqlalchemy.ext.declarative import declarative_base
 
 from FinalProject.DBManager import DBManager
+from FinalProject.Log.Logger import Severity, Logger
 
 Base = declarative_base()
 make_class_dictable(Base)
-
-
-class Status(Enum):
-    WIP = "WORK_IN_PROGRESS"
-    FAILED = "FAILED"
-    SUCCESS = "SUCCESS"
 
 
 class CeleryTable(Base):
@@ -25,6 +18,10 @@ class CeleryTable(Base):
     @classmethod
     def create_db(cls):
         cls.__table__.create(DBManager.engine)
+
+    def print(self, msg, severity=Severity.DEBUG):
+        Logger.print(f'{msg}\nagent_id={str(self.group_task_id)}\n',
+                     severity=severity, task_id=self.task_id, task_type='Worker')
 
 
 if __name__ == '__main__':

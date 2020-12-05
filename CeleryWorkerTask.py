@@ -1,11 +1,9 @@
-# from Solvers.SolverInterface import SolverInterface
-
 from FinalProject.DBManager import DBManager
 from FinalProject.DataManager import DataManagement
 from celery import Celery
 from kombu import Queue
 
-from FinalProject.Log.Logger import Logger, Severity
+from FinalProject.Log.Logger import Severity
 
 broker_url = 'amqp://worker:kingkingking@18.193.6.223:32781/rhost'
 backend_url = f'db+postgresql+psycopg2://{DBManager.get_path()}'
@@ -19,12 +17,13 @@ def add(x, y):
     return x + y
 
 
-@app.task(bind=True)
+@app.task()
 def test_print(self, *args):
     from FinalProject.CeleryUtils.CeleryTableWorker import CeleryTableWorker
-    get_celery_results = CeleryTableWorker.get_workers_by_agent_id(self.id)
-    models = [result.model for result in get_celery_results]
-    best_model = sorted(models, lambda x: x.score, reverse=True)[0]
+    result_ids = {task_response.get('task_id') for task_response in args}
+    workers = CeleryTableWorker.get_workers_by_task_ids(result_ids)
+    models_result = [worker.model_results for worker in workers]
+    best_model = sorted(models_result, lambda model: model['score'], reverse=True)[0]
     return best_model
 
 
@@ -67,11 +66,11 @@ class CeleryWorkerTask:
 
 
 @app.task(bind=True)
-def train_worker(self, x, y, agent_id, config: dict):
+def train_worker(self, x, y, config: dict):
     my_task_id = self.request.id
     from FinalProject.CeleryUtils.CeleryTableWorker import Statuses, CeleryTableWorker
-    worker = CeleryTableWorker(task_id=my_task_id, status=Statuses.STARTED, agent_id=agent_id, model_settings=config)
-    # session.merge(obj)
+    worker = CeleryTableWorker(task_id=my_task_id, status=Statuses.STARTED, model_settings=config)
+    DBManager.get_session().merge(worker)
     try:
         from FinalProject.Solvers.SolverFactory import SolverFactory
         from FinalProject.Solvers.SolversInterface import SolversInterface
@@ -79,14 +78,15 @@ def train_worker(self, x, y, agent_id, config: dict):
         solver: SolversInterface = SolverFactory.get_solver_by_name(config)
         solver.load_from_json(config, y)
         solver.train(x, y)
+        solver.score = 0.6
+        worker.model_results = {"score": solver.score}
         # score = solver.calculate_score()
         worker.status = Statuses.FINISHED
         print(solver.export_to_json())
     except Exception as ex:
         worker.status = Statuses.FAILED
-        Logger.print(f'an error in train worker. agent_id={agent_id} | task_id={my_task_id}\nError:{repr(ex)}',
-                     severity=Severity.ERROR, task_id=my_task_id, task_type='Worker')
+        worker.print(repr(ex), Severity.ERROR)
     finally:
         DBManager.get_session().merge(worker)
         DBManager.get_session().commit()
-    return {"status": worker.status}
+    return {"task_id": worker.task_id}
