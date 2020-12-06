@@ -31,11 +31,15 @@ class CeleryTableWorker(Base):
 
     @classmethod
     def get_workers_by_task_ids(cls, task_ids: Iterable):
-        return DBManager.get_session().query(cls).filter_by(cls.task_id.in_(task_ids)).all()
+        return DBManager.get_session().query(cls).filter(cls.task_id.in_(task_ids)).all()
 
     def print(self, msg, severity=Severity.DEBUG):
         Logger.print(f'{msg}\n | task_id={self.task_id}\n',
                      severity=severity, task_id=self.task_id, task_type='Worker')
+
+    @property
+    def score(self):
+        return self.model_results.get('score', -1)
 
 
 if __name__ == '__main__':

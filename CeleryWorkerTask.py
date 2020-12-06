@@ -17,13 +17,14 @@ def add(x, y):
     return x + y
 
 
-@app.task()
+@app.task(bind=True)
 def test_print(self, *args):
-    from FinalProject.CeleryUtils.CeleryTableWorker import CeleryTableWorker
-    result_ids = {task_response.get('task_id') for task_response in args}
+    from FinalProject.CeleryUtils.CeleryTableWorker import CeleryTableWorker, Statuses
+    result_ids = {response.get('task_id') for arg in args for response in arg}
     workers = CeleryTableWorker.get_workers_by_task_ids(result_ids)
-    models_result = [worker.model_results for worker in workers]
-    best_model = sorted(models_result, lambda model: model['score'], reverse=True)[0]
+    models_result = [worker for worker in workers if worker.status == Statuses.FINISHED]
+    workers[1].model_results['score'] = 1
+    best_model = sorted(models_result, key=lambda model: model.score, reverse=True)[0]
     return best_model
 
 
@@ -71,6 +72,7 @@ def train_worker(self, x, y, config: dict):
     from FinalProject.CeleryUtils.CeleryTableWorker import Statuses, CeleryTableWorker
     worker = CeleryTableWorker(task_id=my_task_id, status=Statuses.STARTED, model_settings=config)
     DBManager.get_session().merge(worker)
+    DBManager.get_session().commit()
     try:
         from FinalProject.Solvers.SolverFactory import SolverFactory
         from FinalProject.Solvers.SolversInterface import SolversInterface
