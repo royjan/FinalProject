@@ -33,8 +33,7 @@ class CeleryTableWorker(Base):
         return DBManager.get_session().query(cls).filter(cls.task_id.in_(task_ids)).all()
 
     def print(self, msg, severity=Severity.DEBUG):
-        Logger.print(f'{msg}\n | task_id={self.task_id}\n',
-                     severity=severity, task_id=self.task_id, task_type='Worker')
+        Logger.print(msg, severity=severity, task_id=self.task_id, task_type='Worker')
 
     @property
     def score(self):

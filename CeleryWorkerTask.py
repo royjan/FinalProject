@@ -14,17 +14,14 @@ app.conf.task_queues = [Queue('test', durable=True, routing_key='test')]
 
 
 @app.task(bind=True)
-def test_print(self, *server_answers, params=None):
-    if not params:
-        params = {}
+def compare_models(self, *server_answers, **params):
     my_task_id = self.request.id
     from FinalProject.CeleryUtils.CeleryTableWorker import CeleryTableWorker
     result_ids = {response.get('task_id') for arg in server_answers for response in arg}
     workers = CeleryTableWorker.get_workers_by_task_ids(result_ids)
     statuses = {worker.task_id: worker.status for worker in workers}
-    agent = CeleryTable(group_id_task=my_task_id, status=statuses, title=params.get('title'))
+    agent = CeleryTable(group_task_id=my_task_id, status=statuses, title=params.get('dataset_name'))
     agent.update_best_model(workers)
-
 
 
 class CeleryWorkerTask:

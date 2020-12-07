@@ -1,5 +1,5 @@
 from FinalProject.CeleryUtils.CeleryUtils import group_tasks
-from FinalProject.CeleryWorkerTask import train_worker, test_print
+from FinalProject.CeleryWorkerTask import train_worker, compare_models
 from FinalProject.CeleryUtils import CeleryUtils
 payload = [
     {"class_name": "ScikitSolver",
@@ -87,5 +87,5 @@ payload = [
             """}]
 
 group = group_tasks(train_worker, payload, 'test')
-agent = CeleryUtils.create_chords(group, test_print, dataset_name='test')
+agent = CeleryUtils.create_chords(group, compare_models, dataset_name='test')
 agent.apply_async(queue='test')
