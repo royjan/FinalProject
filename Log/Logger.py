@@ -21,7 +21,7 @@ class Logger(Base):
     created_date = Column("created_date", DateTime(timezone=True), quote=True, server_default=func.now())
     severity = Column("severity", Integer, quote=True)  # 10 \ 20 \ 30 \ 40
     task_type = Column("task_type", String(255), quote=True)  # agent \ worker
-    task_id = Column("task_id", Integer, quote=True)
+    task_id = Column("task_id", String(255), quote=True)
     msg = Column("msg", String(255), quote=True)
 
     @classmethod

@@ -3,42 +3,38 @@ from typing import Union, Iterable
 
 import numpy as np
 import pandas as pd
-from FinalProject.Log.Logger import Logger
+
+from FinalProject.Log.Logger import Logger, Severity
 
 
 class PreprocessData:
     TEST_COLUMN = "marked_as_test"
 
     class PreprocessDataSettings:
-        math_function = {'mean': np.nanmean, 'median': np.nanmedian, 'drop': None}
+        math_function = {'mean': np.nanmean, 'median': np.nanmedian}
 
-        def __init__(self, drop_columns=False):
-            self.nan_math_function = dict()  # {column: function}
-            self.drop_columns = drop_columns
+        def __init__(self, nan_math_function=None):
+            if not nan_math_function:
+                nan_math_function = dict()
+            self.nan_math_function = nan_math_function
 
-        @staticmethod
-        def manipulate(series: pd.Series, function):
-            return function(series)
+        @classmethod
+        def calculate(cls, function: str, series: pd.Series):
+            return cls.math_function[function](series)
 
     def __init__(self, path: list, label="label", title="test"):
         self.path = path
         self.df = None
         self.label = label
         self.title = title
-        self.X = None
-        self.y = None
         self.smote = False
         self._filter_features = False
 
     def get_y(self) -> pd.Series:
-        if self.y is None:
-            return self.df[self.label]
-        return self.y
+        return self.df[~self.df[self.TEST_COLUMN]][self.label]
 
     def get_X(self) -> pd.DataFrame:
-        if self.X is None:
-            return self.delete_column(self.df, self.label)
-        return self.X
+        return self.df[~self.df[self.TEST_COLUMN]].drop(self.label, axis=1)
 
     @property
     def num_of_classes(self):
@@ -51,14 +47,16 @@ class PreprocessData:
         from imblearn.over_sampling import SMOTE
         sm = SMOTE(random_state=42, k_neighbors=self.num_of_classes)
         try:
-            self.X, self.y = sm.fit_sample(self.get_X(), self.get_y())
-            self.replace_x_y()
+            X, y = sm.fit_sample(self.get_X(), self.get_y())
+            self.replace_x_y(X, y)
         except ValueError:
-            Logger.print("Too many differences between the classes.")
+            Logger.print("Too many differences between the classes.", severity=Severity.WARNING)
 
-    def replace_x_y(self):
-        self.df = self.X
-        self.df[self.label] = self.y
+    def replace_x_y(self, X_train, y_train):
+        X = X_train.append(self.df[self.df[self.TEST_COLUMN]].drop(self.label, axis=1))
+        y = y_train.append(self.df[self.df[self.TEST_COLUMN]][self.label])
+        X[self.label] = y
+        self.df = X
 
     def filter_features(self, method):
         """
@@ -142,10 +140,9 @@ class PreprocessData:
         df = self.df.copy()
         if settings.nan_math_function:
             for column, function in settings.nan_math_function.items():
-                new_value = settings.manipulate(df[column], function)
+                new_value = settings.calculate(function, df[column])
                 df[column] = df[column].fillna(new_value)
-        if settings.drop_columns:
-            df = df.dropna(how='any')
+        df = df.dropna(how='any')
         return df
 
     def analyze_profile(self):
@@ -178,13 +175,15 @@ class PreprocessData:
 
 
 if __name__ == '__main__':
-    from collections import Counter
-    pp = PreprocessData(path=['data/train.csv', 'data/test.csv'], label='Pclass')
+    pp = PreprocessData(path=['data/train.csv', 'data/test.csv'], label='Survived')
     pp.set_data()
     pp.df = pp.delete_column(pp.df, ['PassengerId', 'Name', 'Cabin', 'Ticket'])
     pp.one_hot_encode(['Sex', 'Embarked'])
-    pp_settings = PreprocessData.PreprocessDataSettings(drop_columns=True)
+    pp_settings = PreprocessData.PreprocessDataSettings({'Age': 'median'})
     pp.df = pp.nan_handle(pp_settings)
-    print(Counter(pp.df[pp.label]))
     pp.apply_smote()
-    print(Counter(pp.df[pp.label]))
+    from FinalProject.DataManager import DataManagement
+
+    data = DataManagement()
+    data.set_data_from_preprocess_object(pp)
+    data.df_to_db()

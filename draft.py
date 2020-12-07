@@ -1,26 +1,6 @@
-# from DataManager import DataManagement
-# from PreprocessData import PreprocessData
-#
-# if __name__ == '__main__':
-#     pp = PreprocessData("data/username.csv", "Username")
-#     pp.load_data_from_file()
-#     pp.analyze_profile()
-#     dm = DataManagement()
-#     dm.set_data_from_preprocess_object(pp)
-#     dm.df_to_db()
-#
-# # from DataManager import DataManagement
-# from PreprocessData import PreprocessData
-#
-# if __name__ == '__main__':
-#     pp = PreprocessData("data/username.csv", "Username")
-#     pp.load_data_from_file()
-#     pp.analyze_profile()
-#     dm = DataManagement()
-#     dm.set_data_from_preprocess_object(pp)
-#     dm.df_to_db()
-#
-#
+from FinalProject.CeleryUtils.CeleryUtils import group_tasks
+from FinalProject.CeleryWorkerTask import train_worker, test_print
+from FinalProject.CeleryUtils import CeleryUtils
 payload = [
     {"class_name": "ScikitSolver",
      "model_name": "LinearRegression",
@@ -36,7 +16,7 @@ payload = [
                     "config": {
                       "batch_input_shape": [
                         null,
-                        3
+                        10
                       ],
                       "dtype": "float32",
                       "sparse": false,
@@ -53,7 +33,7 @@ payload = [
                         3
                       ],
                       "dtype": "float32",
-                      "units": 3,
+                      "units": 11,
                       "activation": "relu",
                       "use_bias": true,
                       "kernel_initializer": {
@@ -105,35 +85,7 @@ payload = [
               "backend": "tensorflow"
             }
             """}]
-# from DataManager import DataManagement
-# from PreprocessData import PreprocessData
-#
-# if __name__ == '__main__':
-#     pp = PreprocessData("data/username.csv", "Username")
-#     pp.load_data_from_file()
-#     pp.analyze_profile()
-#     dm = DataManagement()
-#     dm.set_data_from_preprocess_object(pp)
-#     dm.df_to_db()
-#
-#
-# from DataManager import DataManagement
-# from PreprocessData import PreprocessData
-#
-# if __name__ == '__main__':
-#     pp = PreprocessData("data/username.csv", "Username")
-#     pp.load_data_from_file()
-#     pp.analyze_profile()
-#     dm = DataManagement()
-#     dm.set_data_from_preprocess_object(pp)
-#     dm.df_to_db()
-#
-#
-from FinalProject.CeleryWorkerTask import train_worker, test_print
 
-group = [train_worker.s(x=[[1, 2, 3], [3, 4, 5], [5, 6, 7]], y=[1, 3, 5], config=_p) for _p in payload]
-from FinalProject.CeleryUtils import CeleryUtils
-
-z = CeleryUtils.create_chords(group, test_print)
-z.apply_async(queue='test')
-print("asd")
+group = group_tasks(train_worker, payload, 'test')
+agent = CeleryUtils.create_chords(group, test_print, dataset_name='test')
+agent.apply_async(queue='test')

@@ -28,7 +28,7 @@ class DBManager:
     @classmethod
     def reflect_table(cls, table_name):
         from sqlalchemy import MetaData
-        metadata = MetaData(bind=cls.engine, schema=cls.scheme)
+        metadata = MetaData(bind=cls.engine)
         metadata.reflect(only=[table_name])
-        table = metadata.tables[cls.scheme + '.' + table_name]
+        table = metadata.tables[table_name]
         return table

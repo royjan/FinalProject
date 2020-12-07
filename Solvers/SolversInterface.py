@@ -2,7 +2,6 @@ class SolversInterface:
     model_obj = None
     NAME = "SolversInterface"
     EXTENSION = "json"
-    score = 0
 
     @classmethod
     def get_solvers(cls):
@@ -13,6 +12,10 @@ class SolversInterface:
 
     def export_to_json(self):
         raise NotImplementedError
+
+    def predict(self, X):
+        X = X.copy().dropna(how='any')
+        return self.model_obj.predict(X)
 
     @staticmethod
     def calculate_score(y_test, y_pred):

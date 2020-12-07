@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import Iterable
 
 from dictalchemy import make_class_dictable

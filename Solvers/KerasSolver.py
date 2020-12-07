@@ -46,8 +46,8 @@ class KerasSolver(SolversInterface):
         import numpy as np
         if self.generator:
             return self.model_obj.fit_generator(self.generator.flow(X_train, y_train), *args, **kwargs)
-        X_train = np.array(X_train)
-        y_train = np.array(y_train)
+        X_train = np.asarray(X_train).astype(np.float32)
+        y_train = np.asarray(y_train).astype(np.float32)
         return self.model_obj.fit(X_train, y_train, epochs=3)
 
     def export_to_json(self):
@@ -63,13 +63,15 @@ class KerasSolver(SolversInterface):
 
     def get_optimize_settings(self, config, y) -> dict:
         self.optimizer_info['loss'] = config.get('loss') or 'binary_crossentropy' if \
-            len(set(y)) > 2 else 'categorical_crossentropy'
+            len(set(y)) <= 2 else 'categorical_crossentropy'
         self.optimizer_info['optimizer'] = config.get("optimizer") or self.optimizer_info['optimizer']
         self.optimizer_info['metrics'] = config.get("metrics") or self.optimizer_info['metrics']
         return self.optimizer_info
 
     def predict(self, X):
-        return self.model_obj.predict(X)
+        import numpy as np
+        X = np.asarray(X).astype(np.float32)
+        return self.model_obj.predict_classes(X)
 
 
 if __name__ == '__main__':
