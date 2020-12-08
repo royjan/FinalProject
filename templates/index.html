@@ -1,0 +1,21 @@
+<html>
+    <body>
+         <form action="/upload" method="post" enctype="multipart/form-data">
+             <label for="files">Select files:</label>
+             <input type="file" id="files" name="files[]" multiple><br><br>
+             <label for="title">Title:</label>
+             <input type="text" id="title" name="title"><br><br>
+             <label for="label">Label:</label>
+             <input type="text" id="label" name="label"><br><br>
+             <label for="smote">SMOTE (automatic class balancer):</label>
+             <input type="text" id="smote" name="smote"><br><br>
+             <label for="filterFeatures">impute technic (automatic class balancer):</label>
+             <select id="filterFeatures" name="filterFeatures">
+                 <option value="None" selected>None</option>
+                 <option value="median">median</option>
+                 <option value="mean">mean</option>
+             </select>
+             <input type="submit">
+        </form>
+    </body>
+</html>

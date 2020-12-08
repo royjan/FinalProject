@@ -28,7 +28,6 @@ class PreprocessData:
         self.label = label
         self.title = title
         self.smote = False
-        self._filter_features = False
 
     def get_y(self) -> pd.Series:
         return self.df[~self.df[self.TEST_COLUMN]][self.label]
@@ -58,19 +57,21 @@ class PreprocessData:
         X[self.label] = y
         self.df = X
 
-    def filter_features(self, method):
+    def filter_features(self, method: str):
         """
         function to drop unnecessary columns by median, mean or half
         """
-        cor = self.df.corr()
-        cor_target = abs(cor[self.label])
+        df = self.df.copy()
+        df = self.delete_column(df, [self.TEST_COLUMN])
+        cor = df.corr()
+        cor_target = abs(cor[self.label]).drop(self.label)
         if method == "mean":
             irrelevant_features = cor_target[cor_target < cor_target.mean()]
         elif method == "median":
             irrelevant_features = cor_target[cor_target < cor_target.median()]
         else:
             irrelevant_features = cor_target[cor_target < 0.5]
-        self.df = self.delete_column(self.df, irrelevant_features)
+        self.df = self.delete_column(self.df, irrelevant_features.index)
 
     @staticmethod
     def delete_column(df: pd.DataFrame, columns: Union[str, Iterable]) -> pd.DataFrame:
@@ -81,12 +82,13 @@ class PreprocessData:
         """
         return df.drop(columns, axis=1)
 
-    def one_hot_encode(self, columns: list = None, sparse_matrix: bool = False):
+    def one_hot_encode(self, sparse_matrix: bool = False):
         """
         :param columns: columns to one hot (0/1)
         :param sparse_matrix: to sparse the matrix
         :return: a new Data frame
         """
+        columns = [column for column, dtype in self.df.dtypes.to_dict().items() if dtype == 'object']
         for column in columns:
             temp_df = pd.get_dummies(self.df[column], sparse=sparse_matrix, prefix=column)
             self.df = pd.concat([self.df, temp_df], axis=1)
@@ -132,16 +134,23 @@ class PreprocessData:
             return pd.read_pickle(path)
         raise TypeError("File not supported! Only Excel, CSV and PKL!")
 
-    def nan_handle(self, settings: PreprocessDataSettings) -> pd.DataFrame:
+    def impute(self, settings: PreprocessDataSettings) -> pd.DataFrame:
         """
         :param settings: set of nan's handle functions (math)
         :return: dataframe after manipulation
         """
-        df = self.df.copy()
-        if settings.nan_math_function:
+        df = self.df
+        train, test = df[~df[self.TEST_COLUMN]].copy(), df[df[self.TEST_COLUMN]].copy()
+        if settings is not None:
             for column, function in settings.nan_math_function.items():
-                new_value = settings.calculate(function, df[column])
-                df[column] = df[column].fillna(new_value)
+                new_value = settings.calculate(function, train[column])
+                train[column] = train[column].fillna(new_value)
+        else:
+            columns_to_fill_common = [column for column in df if column not in {self.TEST_COLUMN, self.label}]
+            for column in columns_to_fill_common:
+                most_common = train[column].value_counts(ascending=False).idxmax()
+                train[column] = train[column].fillna(most_common)
+        df = train.append(test)
         df = df.dropna(how='any')
         return df
 
@@ -178,12 +187,13 @@ if __name__ == '__main__':
     pp = PreprocessData(path=['data/train.csv', 'data/test.csv'], label='Survived')
     pp.set_data()
     pp.df = pp.delete_column(pp.df, ['PassengerId', 'Name', 'Cabin', 'Ticket'])
-    pp.one_hot_encode(['Sex', 'Embarked'])
+    pp.one_hot_encode()
     pp_settings = PreprocessData.PreprocessDataSettings({'Age': 'median'})
-    pp.df = pp.nan_handle(pp_settings)
+    pp.df = pp.impute(pp_settings)
     pp.apply_smote()
     from FinalProject.DataManager import DataManagement
 
+    pp.filter_features('median')
     data = DataManagement()
     data.set_data_from_preprocess_object(pp)
     data.df_to_db()
