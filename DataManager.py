@@ -47,6 +47,7 @@ class DataManagement:
     def db_to_df(self):
         df = pd.read_sql(self.get_rows(sub_query=True).statement, DBManager.get_session().bind)
         self.df = df
+        return df
 
     @property
     def X_train(self):

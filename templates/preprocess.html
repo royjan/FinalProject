@@ -8,6 +8,9 @@
     <h1>
         {{session['title'].capitalize()}}
     </h1>
+    <p>
+        To download HTML report please <a href="static/export/{{session['title'].lower()}}.html" target="_blank">click here</a>.
+    </p>
     <form action="/preprocess" method="post">
          <label for="label">Label:</label>
             <select id="label" name="label">
@@ -29,7 +32,7 @@
              <option value="None" selected>None</option>
              <option value="median">median</option>
              <option value="mean">mean</option>
-             <option value="threshold 0.5">common</option>
+             <option value="threshold 0.5">threshold 0.5</option>
          </select>
         <br><br>
          <label for="dropColumns">Drop Columns:</label><br>
@@ -38,7 +41,7 @@
                 <option value="{{column}}">{{column}}</option>
             {% endfor %}
         </select><br><br>
-        <input type="submit">
+        <input type="submit" value="Learn!">
     </form>
 </body>
 </html>

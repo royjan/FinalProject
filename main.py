@@ -123,28 +123,38 @@ def upload():
     title = session['title'] = request.form['title']
     pp = PreprocessData(path=file_names, title=title)
     pp.set_data()
+    import threading
+    analyzer = threading.Thread(target=pp.analyze_profile)
+    analyzer.start()
     data = DataManagement()
     data.set_data_from_preprocess_object(pp)
-    data.df_to_db()
+    upload_data = threading.Thread(target=data.df_to_db)
+    upload_data.start()
+    analyzer.join()
+    upload_data.join()
     return render_template('preprocess.html', columns=get_columns_name(title))
 
 
-@app.route('/preprocess', methods=['GET'])
+@app.route('/preprocess', methods=['POST'])
 def preprocess():
-    from flask import session
+    from flask import session, request
     from FinalProject.PreprocessData import PreprocessData
     from FinalProject.DataManager import DataManagement
-    pp = PreprocessData(label=session['label'], title=session['title'])
+    pp = PreprocessData(label=request.form['label'], title=session['title'])
     data = DataManagement()
     data.set_data_from_preprocess_object(pp)
     pp.df = data.db_to_df()
-    pp.df = pp.delete_column(pp.df, ['PassengerId', 'Name', 'Cabin', 'Ticket'])
-    pp.one_hot_encode()
-    pp_settings = None  # PreprocessData.PreprocessDataSettings({'Age': 'median'})
+    pp.df = pp.delete_column(pp.df, request.form.getlist('dropColumns'))
+    impute_method = None if request.form['impute'] == 'None' else request.form['impute']
+    pp_settings = PreprocessData.PreprocessDataSettings(impute_method)
     pp.df = pp.impute(pp_settings)
-    pp.apply_smote()
-    pp.filter_features('median')
+    if request.form.get('smote', 'off') == 'on':
+        pp.apply_smote()
+    pp.filter_features(request.form['filterFeatures'])
+    pp.one_hot_encode()
+    data.df = pp.df
     data.df_to_db(replace_label=True)
+    return {"mission": "Started"}
 
 
 @app.route('/train', methods=['GET'])

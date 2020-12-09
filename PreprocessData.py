@@ -11,23 +11,21 @@ class PreprocessData:
     TEST_COLUMN = "marked_as_test"
 
     class PreprocessDataSettings:
-        math_function = {'mean': np.nanmean, 'median': np.nanmedian}
+        math_function = {'mean': np.nanmean, 'median': np.nanmedian, 'common': None}
 
         def __init__(self, nan_math_function=None):
-            if not nan_math_function:
-                nan_math_function = dict()
             self.nan_math_function = nan_math_function
 
         @classmethod
         def calculate(cls, function: str, series: pd.Series):
             return cls.math_function[function](series)
 
-    def __init__(self, path=None, label="label", title="test"):
+    def __init__(self, title, path=None, label="label"):
         self.path = path
         self.df = None
         self.label = label
         self.title = title
-        self.smote = False
+        self.path_to_export = f"static/export/{self.title.lower()}.html"
 
     def get_y(self) -> pd.Series:
         return self.df[~self.df[self.TEST_COLUMN]][self.label]
@@ -61,6 +59,8 @@ class PreprocessData:
         """
         function to drop unnecessary columns by median, mean or half
         """
+        if method == 'None':
+            return
         df = self.df.copy()
         df = self.delete_column(df, [self.TEST_COLUMN])
         cor = df.corr()
@@ -88,7 +88,8 @@ class PreprocessData:
         :param sparse_matrix: to sparse the matrix
         :return: a new Data frame
         """
-        columns = [column for column, dtype in self.df.dtypes.to_dict().items() if dtype == 'object']
+        columns = [column for column, dtype in self.df.dtypes.to_dict().items() if dtype == 'object' if
+                   column not in {self.TEST_COLUMN, self.label}]
         for column in columns:
             temp_df = pd.get_dummies(self.df[column], sparse=sparse_matrix, prefix=column)
             self.df = pd.concat([self.df, temp_df], axis=1)
@@ -141,15 +142,15 @@ class PreprocessData:
         """
         df = self.df
         train, test = df[~df[self.TEST_COLUMN]].copy(), df[df[self.TEST_COLUMN]].copy()
-        if settings is not None:
-            for column, function in settings.nan_math_function.items():
-                new_value = settings.calculate(function, train[column])
-                train[column] = train[column].fillna(new_value)
-        else:
+        if settings.nan_math_function == 'common':
             columns_to_fill_common = [column for column in df if column not in {self.TEST_COLUMN, self.label}]
             for column in columns_to_fill_common:
                 most_common = train[column].value_counts(ascending=False).idxmax()
                 train[column] = train[column].fillna(most_common)
+        elif settings.nan_math_function in settings.math_function:
+            for column in train:
+                new_value = settings.calculate(settings.nan_math_function, train[column])
+                train[column] = train[column].fillna(new_value)
         df = train.append(test)
         df = df.dropna(how='any')
         return df
@@ -159,11 +160,8 @@ class PreprocessData:
         This function export an HTML file of data's report
         """
         from pandas_profiling import ProfileReport
-        import webbrowser
-        path_to_export = f"export/{self.title.lower()}.html"
         df_profiler = ProfileReport(self.df, title=self.title)
-        df_profiler.to_file(path_to_export)
-        webbrowser.open('file://' + os.path.realpath(path_to_export))
+        df_profiler.to_file(self.path_to_export)
 
     def split_train_test(self):
         """
@@ -181,19 +179,3 @@ class PreprocessData:
                 lst_to_test.extend(item)
         for index in lst_to_test:
             self.df.at[index, self.TEST_COLUMN] = True
-
-
-if __name__ == '__main__':
-    pp = PreprocessData(path=['data/train.csv', 'data/test.csv'], label='Survived')
-    pp.set_data()
-    pp.df = pp.delete_column(pp.df, ['PassengerId', 'Name', 'Cabin', 'Ticket'])
-    pp.one_hot_encode()
-    pp_settings = PreprocessData.PreprocessDataSettings({'Age': 'median'})
-    pp.df = pp.impute(pp_settings)
-    pp.apply_smote()
-    from FinalProject.DataManager import DataManagement
-
-    pp.filter_features('median')
-    data = DataManagement()
-    data.set_data_from_preprocess_object(pp)
-    data.df_to_db()
