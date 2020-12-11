@@ -9,15 +9,12 @@ class ScikitSolver(SolversInterface):
 
     @staticmethod
     def get_supported_models():
-        from sklearn.linear_model import LinearRegression
         from sklearn.linear_model import LogisticRegression
         from sklearn.svm import SVC
-        from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+        from sklearn.tree import DecisionTreeClassifier
         models = {
-            "LinearRegression": LinearRegression,
             "SVC": SVC,
             "DecisionTreeClassifier": DecisionTreeClassifier,
-            "DecisionTreeRegressor": DecisionTreeRegressor,
             "LogisticRegression": LogisticRegression
         }
         return models

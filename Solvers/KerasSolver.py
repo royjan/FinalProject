@@ -7,7 +7,7 @@ class KerasSolver(SolversInterface):
     @staticmethod
     def get_supported_models():
         models = {
-            "Keras": None,
+            "Keras": "Keras",
         }
         return models
 

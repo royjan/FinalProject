@@ -91,8 +91,8 @@ payload = [
             """}]
 app = Flask(__name__)
 
-
 app.config.update(DEBUG=True, SECRET_KEY='royroy')
+
 
 @app.route('/')
 def index():
@@ -112,8 +112,8 @@ def save_and_get_file_names():
 
 @app.route('/upload', methods=['POST'])
 def upload():
-    def get_columns_name(title):
-        table = DBManager.reflect_table(f'{title}_data')
+    def get_columns_name(_title):
+        table = DBManager.reflect_table(f'{_title}_data')
         return [str(column.key) for column in table.c if str(column.key) != PreprocessData.TEST_COLUMN]
 
     from flask import request, session
@@ -133,6 +133,12 @@ def upload():
     analyzer.join()
     upload_data.join()
     return render_template('preprocess.html', columns=get_columns_name(title))
+
+
+@app.route('/algorithms', methods=['GET'])
+def algorithm():
+    from FinalProject.Solvers.SolverFactory import SolverFactory
+    return render_template('algorithms.html', algorithms=SolverFactory.get_algorithms())
 
 
 @app.route('/preprocess', methods=['POST'])

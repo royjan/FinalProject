@@ -1,11 +1,22 @@
 <html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Uploading Data</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="../static/css/styles.css"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/flatly/bootstrap.min.css" rel="stylesheet"
+          type="text/css">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+</head>
     <body>
          <form action="/upload" method="post" enctype="multipart/form-data">
              <label for="files">Select files:</label>
              <input type="file" id="files" name="files[]" multiple><br><br>
              <label for="title">Title:</label>
              <input type="text" id="title" name="title"><br><br>
-             <input type="submit" value="Upload Data">
+             <input type="submit" value="Upload Data!">
         </form>
     </body>
 </html>

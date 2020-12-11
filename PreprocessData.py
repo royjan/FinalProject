@@ -84,7 +84,6 @@ class PreprocessData:
 
     def one_hot_encode(self, sparse_matrix: bool = False):
         """
-        :param columns: columns to one hot (0/1)
         :param sparse_matrix: to sparse the matrix
         :return: a new Data frame
         """

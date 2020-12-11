@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>jQuery repeatable.js Plugin Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="../static/css/styles.css"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/flatly/bootstrap.min.css" rel="stylesheet"
+          type="text/css">
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="../static/js/jquery.repeatable.js"></script>
+</head>
+<body>
+<form>
+<fieldset class="todos_labels">
+    <div class="repeatable"></div>
+    <div class="form-group" style="text-align:center;">
+        <input type="button" value="Add Algorithm" class="btn btn-default add" align="center">
+    </div>
+</fieldset>
+<script type="text/template" id="todos_labels">
+          <div class="field-group row">
+            <label for="task_{?}">Algorithm</label>
+            <select id="task_{?}" name="task_{?}">
+            {% for algorithm in algorithms %}
+             <option value="{{algorithm}}">{{algorithm.split("_")[-1]}}</option>
+            {% endfor %}
+         </select><br>
+            <label for="duedate_{?}">Parameters (JSON)</label>
+            <textarea class="span2 form-control" name="todos_labels[{?}][duedate]" id="duedate_{?}"></textarea>
+            <input type="button" class="btn btn-danger span-2 delete" value="Remove"/>
+          </div>
+</script>
+<script>
+		$(function() {
+			$(".todos_labels .repeatable").repeatable({
+				addTrigger: ".todos_labels .add",
+				deleteTrigger: ".todos_labels .delete",
+				template: "#todos_labels",
+				startWith: 1,
+				max: 5
+			});
+		});
+</script>
+    </form>
+</body>
+</html>
