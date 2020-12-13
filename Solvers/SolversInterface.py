@@ -20,7 +20,7 @@ class SolversInterface:
     @staticmethod
     def calculate_score(y_test, y_pred):
         from sklearn.metrics import roc_auc_score
-        return roc_auc_score(y_test, y_pred)
+        return roc_auc_score(y_test, y_pred, multi_class="ovr")
 
     @staticmethod
     def get_datetime_to_path():

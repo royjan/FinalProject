@@ -135,17 +135,12 @@ def upload():
     return render_template('preprocess.html', columns=get_columns_name(title))
 
 
-@app.route('/algorithms', methods=['GET'])
-def algorithm():
-    from FinalProject.Solvers.SolverFactory import SolverFactory
-    return render_template('algorithms.html', algorithms=SolverFactory.get_algorithms())
-
-
 @app.route('/preprocess', methods=['POST'])
 def preprocess():
     from flask import session, request
     from FinalProject.PreprocessData import PreprocessData
     from FinalProject.DataManager import DataManagement
+    from FinalProject.Solvers.SolverFactory import SolverFactory
     pp = PreprocessData(label=request.form['label'], title=session['title'])
     data = DataManagement()
     data.set_data_from_preprocess_object(pp)
@@ -160,14 +155,30 @@ def preprocess():
     pp.one_hot_encode()
     data.df = pp.df
     data.df_to_db(replace_label=True)
-    return {"mission": "Started"}
+    return render_template('algorithms.html', algorithms=SolverFactory.get_algorithms())
 
 
-@app.route('/train', methods=['GET'])
+def parsing_request():
+    from flask import request
+    payloads = []
+    for num in range(len(request.form) // 2):
+        _payload = {}
+        algorithm_name = request.form[f'algo_name[new{num}]']
+        algorithm_params = request.form[f'algo_params[new{num}]']
+        _payload['model'] = algorithm_params
+        _payload['class_name'], _payload['model_name'] = algorithm_name.split('_')
+        payloads.append(_payload)
+    return payloads
+
+
+@app.route('/train', methods=['POST'])
 def train():
-    group = group_tasks(train_worker, payload, 'titanic')
-    agent = CeleryUtils.create_chords(group, compare_models, dataset_name='titanic')
+    from flask import session
+    payload = parsing_request()
+    group = group_tasks(train_worker, payload, session['title'])
+    agent = CeleryUtils.create_chords(group, compare_models, dataset_name=session['title'])
     agent.apply_async(queue='test')
+    return {"mission": "Started"}
 
 
 if __name__ == '__main__':
