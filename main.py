@@ -102,8 +102,11 @@ def index():
 def save_and_get_file_names():
     import os
     from flask import request
+    train_file = request.files['train_file']
+    test_file = request.files.get('test_file')
+    uploaded_files = [file_name for file_name in {train_file, test_file} if file_name.filename]
     file_names = []
-    for file in request.files.getlist('files[]'):
+    for file in uploaded_files:
         file_path = os.path.join('data', file.filename)
         file.save(file_path)
         file_names.append(file_path)
@@ -119,7 +122,7 @@ def upload():
     from flask import request, session
     from FinalProject.PreprocessData import PreprocessData
     from FinalProject.DataManager import DataManagement
-    file_names = ['data/train.csv', 'data/test.csv']  # save_and_get_file_names()
+    file_names = save_and_get_file_names()
     title = session['title'] = request.form['title']
     pp = PreprocessData(path=file_names, title=title)
     pp.set_data()
