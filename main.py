@@ -4,6 +4,7 @@ from FinalProject.CeleryUtils import CeleryUtils
 from flask import Flask, render_template
 
 from FinalProject.DBManager import DBManager
+from FinalProject.Log.Logger import Logger
 
 payload = [
     {"class_name": "ScikitSolver",
@@ -158,6 +159,7 @@ def preprocess():
     pp.one_hot_encode()
     data.df = pp.df
     data.df_to_db(replace_label=True)
+    Logger.print("Uploaded done successfully")
     return render_template('algorithms.html', algorithms=SolverFactory.get_algorithms())
 
 

@@ -3,7 +3,7 @@ from typing import Iterable
 from dictalchemy import make_class_dictable
 from sqlalchemy import Column, DateTime, String, JSON, func
 from sqlalchemy.ext.declarative import declarative_base
-from FinalProject.Log.Logger import Logger, Severity
+from FinalProject.Log.Logger import Logger, Severity, TaskType
 from FinalProject.DBManager import DBManager
 
 Base = declarative_base()
@@ -33,7 +33,7 @@ class CeleryTableWorker(Base):
         return DBManager.get_session().query(cls).filter(cls.task_id.in_(task_ids)).all()
 
     def print(self, msg, severity=Severity.DEBUG):
-        Logger.print(msg, severity=severity, task_id=self.task_id, task_type='Worker')
+        Logger.print(msg, severity=severity, task_id=self.task_id, task_type=TaskType.WORKER)
 
     @property
     def score(self):

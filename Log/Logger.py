@@ -15,6 +15,12 @@ class Severity:
     CRITICAL = 50
 
 
+class TaskType:
+    WORKER = "Worker"
+    AGENT = "Agent"
+    WEB = "Web"
+
+
 class Logger(Base):
     __tablename__ = "logs"
     log_id = Column("log_id", Integer, quote=True, autoincrement=True, primary_key=True)
@@ -25,7 +31,7 @@ class Logger(Base):
     msg = Column("msg", String(255), quote=True)
 
     @classmethod
-    def print(cls, msg, severity=Severity.DEBUG, task_id=None, task_type=None):
+    def print(cls, msg, severity=Severity.DEBUG, task_id=None, task_type=TaskType.WEB):
         msg = str(msg)
         print(f"{severity}: {msg}")
         DBManager.get_session().execute(

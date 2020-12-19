@@ -3,7 +3,7 @@ from sqlalchemy import Column, DateTime, String, func, JSON
 from sqlalchemy.ext.declarative import declarative_base
 
 from FinalProject.DBManager import DBManager
-from FinalProject.Log.Logger import Severity, Logger
+from FinalProject.Log.Logger import Severity, Logger, TaskType
 
 Base = declarative_base()
 make_class_dictable(Base)
@@ -22,7 +22,7 @@ class CeleryTable(Base):
         cls.__table__.create(DBManager.engine)
 
     def print(self, msg, severity=Severity.DEBUG):
-        Logger.print(msg, severity=severity, task_id=self.group_task_id, task_type='Agent')
+        Logger.print(msg, severity=severity, task_id=self.group_task_id, task_type=TaskType.AGENT)
 
     def update_best_model(self, workers):
         try:
