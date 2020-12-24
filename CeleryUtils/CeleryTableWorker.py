@@ -24,6 +24,19 @@ class CeleryTableWorker(Base):
     model_settings = Column("model_settings", JSON, default={})
     model_results = Column("model_results", JSON, default={})
 
+    def as_dict(self):
+        from datetime import datetime
+        import json
+        _dict = {}
+        for key, value in self.asdict().items():
+            if type(value) is datetime:
+                _dict[key] = value.strftime("%d/%m/%Y, %H:%M:%S")
+            elif type(value) is dict:
+                _dict[key] = json.dumps(value).replace('\\', '').replace('\\', '')
+            else:
+                _dict[key] = value
+        return _dict
+
     @classmethod
     def create_db(cls):
         cls.__table__.create(DBManager.engine)

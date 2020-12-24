@@ -1,10 +1,14 @@
 from FinalProject.CeleryUtils.CeleryTable import CeleryTable
 from FinalProject.DBManager import DBManager
 from FinalProject.DataManager import DataManagement
+from FinalProject.Solvers.SolverFactory import SolverFactory
+from FinalProject.Solvers.SolversInterface import SolversInterface
+from FinalProject.CeleryUtils.CeleryTableWorker import CeleryTableWorker, Statuses
 from celery import Celery
 from kombu import Queue
-
+import pandas as pd
 from FinalProject.Log.Logger import Severity
+from FinalProject.mail import send_mail
 
 broker_url = 'amqp://worker:king@18.193.6.223:32781/rhost'
 backend_url = f'db+postgresql+psycopg2://{DBManager.get_path()}'
@@ -16,12 +20,20 @@ app.conf.task_queues = [Queue('test', durable=True, routing_key='test')]
 @app.task(bind=True)
 def compare_models(self, *server_answers, **params):
     my_task_id = self.request.id
-    from FinalProject.CeleryUtils.CeleryTableWorker import CeleryTableWorker
     result_ids = {response.get('task_id') for arg in server_answers for response in arg}
     workers = CeleryTableWorker.get_workers_by_task_ids(result_ids)
     statuses = {worker.task_id: worker.status for worker in workers}
     agent = CeleryTable(group_task_id=my_task_id, status=statuses, title=params.get('dataset_name'))
     agent.update_best_model(workers)
+    create_report(workers)
+
+
+def create_report(workers):
+    df = pd.DataFrame([worker.as_dict() for worker in workers])
+    df = df.iloc[df['model_results'].str.get('score').fillna(-1).astype(int).argsort()[::-1]]
+    df.to_csv("report.csv", index=False)
+    body = f"best_model: {df.iloc[0].model_settings}"
+    send_mail('royjan2007@gmail.com', body, "Score Report", 'report.csv', False)
 
 
 class CeleryWorkerTask:
@@ -57,15 +69,11 @@ class CeleryWorkerTask:
 @app.task(bind=True)
 def train_worker(self, config: dict, dataset_name: str):
     my_task_id = self.request.id
-    from FinalProject.CeleryUtils.CeleryTableWorker import Statuses, CeleryTableWorker
     worker = CeleryTableWorker(task_id=my_task_id, status=Statuses.STARTED, model_settings=config)
     DBManager.get_session().merge(worker)
     DBManager.get_session().commit()
     data = DataManagement(title=dataset_name)
     try:
-        from FinalProject.Solvers.SolverFactory import SolverFactory
-        from FinalProject.Solvers.SolversInterface import SolversInterface
-        from FinalProject.CeleryUtils import CeleryTableWorker
         solver: SolversInterface = SolverFactory.get_solver_by_name(config)
         solver.load_from_json(config, data.y_train)
         solver.train(data.X_train, data.y_train)
@@ -73,7 +81,6 @@ def train_worker(self, config: dict, dataset_name: str):
         score = solver.calculate_score(data.y_test, y_pred)
         worker.model_results = {"score": score}
         worker.status = Statuses.FINISHED
-        print(solver.export_to_json())
     except Exception as ex:
         worker.status = Statuses.FAILED
         worker.print(repr(ex), Severity.ERROR)
