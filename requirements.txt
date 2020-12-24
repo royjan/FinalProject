@@ -9,4 +9,5 @@ sklearn-json
 celery~=5.0.2
 sklearn
 pymysql
+psycopg2-binary
 kombu~=5.0.2
