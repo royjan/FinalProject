@@ -1,10 +1,15 @@
+from flask import Flask, render_template, request, session
+import os
+import threading
+from celery.result import AsyncResult
+from FinalProject.DBManager import DBManager
+from FinalProject.Log.Logger import Logger
 from FinalProject.CeleryUtils.CeleryUtils import group_tasks
 from FinalProject.CeleryWorkerTask import train_worker, compare_models
 from FinalProject.CeleryUtils import CeleryUtils
-from flask import Flask, render_template
-
-from FinalProject.DBManager import DBManager
-from FinalProject.Log.Logger import Logger
+from FinalProject.PreprocessData import PreprocessData
+from FinalProject.DataManager import DataManagement
+from FinalProject.Solvers.SolverFactory import SolverFactory
 
 payload = [
     {"class_name": "ScikitSolver",
@@ -101,8 +106,6 @@ def index():
 
 
 def save_and_get_file_names():
-    import os
-    from flask import request
     train_file = request.files['train_file']
     test_file = request.files.get('test_file')
     uploaded_files = [file_name for file_name in {train_file, test_file} if file_name.filename]
@@ -120,14 +123,10 @@ def upload():
         table = DBManager.reflect_table(f'{_title}_data')
         return [str(column.key) for column in table.c if str(column.key) != PreprocessData.TEST_COLUMN]
 
-    from flask import request, session
-    from FinalProject.PreprocessData import PreprocessData
-    from FinalProject.DataManager import DataManagement
     file_names = save_and_get_file_names()
     title = session['title'] = request.form['title']
     pp = PreprocessData(path=file_names, title=title)
     pp.set_data()
-    import threading
     analyzer = threading.Thread(target=pp.analyze_profile)
     analyzer.start()
     data = DataManagement()
@@ -141,14 +140,11 @@ def upload():
 
 @app.route('/preprocess', methods=['POST'])
 def preprocess():
-    from flask import session, request
-    from FinalProject.PreprocessData import PreprocessData
-    from FinalProject.DataManager import DataManagement
-    from FinalProject.Solvers.SolverFactory import SolverFactory
     pp = PreprocessData(label=request.form['label'], title=session['title'])
     data = DataManagement()
     data.set_data_from_preprocess_object(pp)
     pp.df = data.db_to_df()
+    pp.split_train_test()
     pp.df = pp.delete_column(pp.df, request.form.getlist('dropColumns'))
     impute_method = None if request.form['impute'] == 'None' else request.form['impute']
     pp_settings = PreprocessData.PreprocessDataSettings(impute_method)
@@ -164,7 +160,6 @@ def preprocess():
 
 
 def parsing_request():
-    from flask import request
     payloads = []
     for num in range(len(request.form) // 2):
         _payload = {}
@@ -174,6 +169,19 @@ def parsing_request():
         _payload['class_name'], _payload['model_name'] = algorithm_name.split('_')
         payloads.append(_payload)
     return payloads
+
+
+@app.route('/get_celery_status', methods=['POST'])
+def get_celery_status():
+    state = None
+    try:
+        task_id = request.args.get('task_id') or request.json.get('task_id')
+        task = AsyncResult(task_id)
+        state = task.state
+    except Exception as ex:
+        pass
+    finally:
+        return {"status": state}
 
 
 @app.route('/train', methods=['POST'])

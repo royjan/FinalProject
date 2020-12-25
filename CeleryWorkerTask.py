@@ -30,11 +30,12 @@ def compare_models(self, *server_answers, **params):
 
 
 def create_report(workers: [CeleryTableWorker], dataset_name: str):
+    file_name_csv = f'report_{dataset_name}.csv'
     df = pd.DataFrame([worker.as_dict() for worker in workers])
     df = df.iloc[df['model_results'].str.get('score').fillna(-1).astype(int).argsort()[::-1]]
-    df.to_csv("report.csv", index=False)
+    df.to_csv(file_name_csv, index=False)
     body = f"best_model for {dataset_name}: {df.iloc[0].model_settings}"
-    send_mail('royjan2007@gmail.com', body, f"Score Report - {dataset_name.capitalize()}", f'report_{dataset_name}.csv', False)
+    send_mail('royjan2007@gmail.com', body, f"Score Report - {dataset_name.capitalize()}", file_name_csv, False)
 
 
 class CeleryWorkerTask:

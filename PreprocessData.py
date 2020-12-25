@@ -107,7 +107,6 @@ class PreprocessData:
             self.df.reset_index(drop=True, inplace=True)
         else:
             self.df = self.load_data_from_file(self.train_path)
-            self.split_train_test()
 
     @property
     def train_path(self):
