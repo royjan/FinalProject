@@ -52,6 +52,10 @@ class CeleryTableWorker(Base):
     def score(self):
         return self.model_results.get('score', -1)
 
+    def update_db(self):
+        DBManager.get_session().merge(self)
+        DBManager.get_session().commit()
+
 
 if __name__ == '__main__':
     CeleryTableWorker.create_db()

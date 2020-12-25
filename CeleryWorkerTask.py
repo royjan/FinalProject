@@ -19,21 +19,22 @@ app.conf.task_queues = [Queue('test', durable=True, routing_key='test')]
 
 @app.task(bind=True)
 def compare_models(self, *server_answers, **params):
+    dataset_name = params.get('dataset_name')
     my_task_id = self.request.id
     result_ids = {response.get('task_id') for arg in server_answers for response in arg}
     workers = CeleryTableWorker.get_workers_by_task_ids(result_ids)
     statuses = {worker.task_id: worker.status for worker in workers}
-    agent = CeleryTable(group_task_id=my_task_id, status=statuses, title=params.get('dataset_name'))
+    agent = CeleryTable(group_task_id=my_task_id, status=statuses, title=dataset_name)
     agent.update_best_model(workers)
-    create_report(workers)
+    create_report(workers, dataset_name)
 
 
-def create_report(workers):
+def create_report(workers: [CeleryTableWorker], dataset_name: str):
     df = pd.DataFrame([worker.as_dict() for worker in workers])
     df = df.iloc[df['model_results'].str.get('score').fillna(-1).astype(int).argsort()[::-1]]
     df.to_csv("report.csv", index=False)
-    body = f"best_model: {df.iloc[0].model_settings}"
-    send_mail('royjan2007@gmail.com', body, "Score Report", 'report.csv', False)
+    body = f"best_model for {dataset_name}: {df.iloc[0].model_settings}"
+    send_mail('royjan2007@gmail.com', body, f"Score Report - {dataset_name.capitalize()}", f'report_{dataset_name}.csv', False)
 
 
 class CeleryWorkerTask:
@@ -70,8 +71,7 @@ class CeleryWorkerTask:
 def train_worker(self, config: dict, dataset_name: str):
     my_task_id = self.request.id
     worker = CeleryTableWorker(task_id=my_task_id, status=Statuses.STARTED, model_settings=config)
-    DBManager.get_session().merge(worker)
-    DBManager.get_session().commit()
+    worker.update_db()
     data = DataManagement(title=dataset_name)
     try:
         solver: SolversInterface = SolverFactory.get_solver_by_name(config)
@@ -85,6 +85,5 @@ def train_worker(self, config: dict, dataset_name: str):
         worker.status = Statuses.FAILED
         worker.print(repr(ex), Severity.ERROR)
     finally:
-        DBManager.get_session().merge(worker)
-        DBManager.get_session().commit()
+        worker.update_db()
     return {"task_id": worker.task_id}
