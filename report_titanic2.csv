@@ -1,0 +1,2 @@
+task_id,status,created_date,model_settings,model_results
+c5cee96b-7903-467f-9708-586ff1911ef8,Finished,"25/12/2020, 10:56:08","{""model"": ""{""C"": 0.8}"", ""class_name"": ""ScikitSolver"", ""model_name"": ""SVC""}","{""score"": 0.5}"

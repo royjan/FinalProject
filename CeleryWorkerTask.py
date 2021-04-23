@@ -26,6 +26,7 @@ def compare_models(self, *server_answers, **params):
     statuses = {worker.task_id: worker.status for worker in workers}
     agent = CeleryTable(group_task_id=my_task_id, status=statuses, title=dataset_name)
     agent.update_best_model(workers)
+    agent.print("Workers are done!")
     create_report(workers, dataset_name)
 
 

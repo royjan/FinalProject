@@ -1,0 +1,3 @@
+task_id,status,created_date,model_settings,model_results
+7026f3a4-1f8c-45be-9d98-c9e36bd2cd72,Finished,"25/12/2020, 02:08:28","{""model"": ""{""C"":0.89}"", ""class_name"": ""ScikitSolver"", ""model_name"": ""LogisticRegression""}","{""score"": 0.7833333333333333}"
+78655fc8-9c78-4086-bbec-8e5b26474292,Finished,"25/12/2020, 02:08:28","{""model"": ""{""C"":1}"", ""class_name"": ""ScikitSolver"", ""model_name"": ""SVC""}","{""score"": 0.5}"

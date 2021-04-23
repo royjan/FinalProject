@@ -3,12 +3,12 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 
 
 class DBManager:
-    user_name = "root"
-    password = "258258"
-    scheme = "exam"
+    user_name = "root" #"postgres"
+    password = "258258" #"king"
+    scheme = "exam" #"postgres"
     port = "5432"
     protocol = "postgres"
-    url = "localhost"
+    url = "localhost"#"ec2-54-93-249-101.eu-central-1.compute.amazonaws.com"
 
     engine = create_engine(
         f'{protocol}://{user_name}:{password}@{url}:{port}/{scheme}',
@@ -32,3 +32,7 @@ class DBManager:
         metadata.reflect(only=[table_name])
         table = metadata.tables[table_name]
         return table
+
+
+if __name__ == '__main__':
+    DBManager.get_session().execute("SELECT 1")
