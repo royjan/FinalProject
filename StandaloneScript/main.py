@@ -16,16 +16,12 @@ from FinalProject.CeleryWorkerTask import train_worker, compare_models
 
 def run_pc():
     start = time.time()
-    df = pd.read_csv('csv_files/train.csv')
-    df = df.dropna()
-    X = df.drop('target', axis=1)[['bin_0', 'bin_1', 'bin_2']]
-    X[['bin_3', 'bin_4', 'bin_5']] = df[['bin_0', 'bin_1', 'bin_2']]
-    y = df['target']
-    df_test = pd.read_csv('csv_files/train.csv')
-    df_test = df_test.dropna()
-    X_test = df_test.drop('target', axis=1)[['bin_0', 'bin_1', 'bin_2']]
-    X_test[['bin_3', 'bin_4', 'bin_5']] = df_test[['bin_0', 'bin_1', 'bin_2']]
-    y_test = df_test['target']
+    df = pd.read_csv('test_program3_data_202104242122.csv')
+    X = df.drop('label', axis=1)
+    y = df['label']
+    df_test = df[df.marked_as_test == True]
+    X_test = df_test.drop('label', axis=1)
+    y_test = df_test['label']
     result = dict()
     for model_lib in [LogisticRegression, DecisionTreeClassifier, RandomForestClassifier, AdaBoostClassifier,
                       MLPClassifier,
@@ -46,10 +42,10 @@ def run_worker():
                {'model': '{}', 'class_name': 'ScikitSolver', 'model_name': 'MLPClassifier'},
                {'model': '{}', 'class_name': 'ScikitSolver', 'model_name': 'KNeighborsClassifier'},
                {'model': '{}', 'class_name': 'ScikitSolver', 'model_name': 'SVC'}]
-    dataset_name = 'titanic2_data'
+    dataset_name = 'test_program_3'
     group = group_tasks(train_worker, payload, dataset_name)
     agent = CeleryUtils.create_chords(group, compare_models, dataset_name=dataset_name)
     agent.apply_async(queue='test')
 
 
-run_worker()
+run_pc()

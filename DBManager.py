@@ -3,12 +3,12 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 
 
 class DBManager:
-    user_name = "root" #"postgres"
-    password = "258258" #"king"
-    scheme = "exam" #"postgres"
+    user_name = "postgres"
+    password = "king"
+    scheme = "postgres"
     port = "5432"
     protocol = "postgres"
-    url = "localhost"#"ec2-54-93-249-101.eu-central-1.compute.amazonaws.com"
+    url = "ec2-54-93-249-101.eu-central-1.compute.amazonaws.com"
 
     engine = create_engine(
         f'{protocol}://{user_name}:{password}@{url}:{port}/{scheme}',

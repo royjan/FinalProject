@@ -31,7 +31,9 @@ class DataManagement:
         from FinalProject.DBManager import DBManager
         if replace_label:
             self.df.rename(columns={self.label: self.LABEL_COLUMN}, inplace=True)
-        self.df.to_sql(self.table_name, con=DBManager.engine, index=False, if_exists='replace', chunksize=2000)
+        self.df.to_sql(self.table_name, con=DBManager.engine, index=False, if_exists='replace', chunksize=100,
+                       method='multi')
+        DBManager.engine.dispose()
         Logger.print('Data uploaded to database')
         if delete_local_file:
             for file_name in self.path:
