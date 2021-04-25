@@ -3,8 +3,8 @@ from typing import Iterable
 from dictalchemy import make_class_dictable
 from sqlalchemy import Column, DateTime, String, JSON, func
 from sqlalchemy.ext.declarative import declarative_base
-from FinalProject.Log.Logger import Logger, Severity, TaskType
-from FinalProject.DBManager import DBManager
+from Log.Logger import Logger, Severity, TaskType
+from DBManager import DBManager
 
 Base = declarative_base()
 make_class_dictable(Base)

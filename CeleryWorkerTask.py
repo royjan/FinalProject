@@ -1,14 +1,14 @@
-from FinalProject.CeleryUtils.CeleryTable import CeleryTable
-from FinalProject.DBManager import DBManager
-from FinalProject.DataManager import DataManagement
-from FinalProject.Solvers.SolverFactory import SolverFactory
-from FinalProject.Solvers.SolversInterface import SolversInterface
-from FinalProject.CeleryUtils.CeleryTableWorker import CeleryTableWorker, Statuses
+from CeleryUtils.CeleryTable import CeleryTable
+from DBManager import DBManager
+from DataManager import DataManagement
+from Solvers.SolverFactory import SolverFactory
+from Solvers.SolversInterface import SolversInterface
+from CeleryUtils.CeleryTableWorker import CeleryTableWorker, Statuses
 from celery import Celery
 from kombu import Queue
 import pandas as pd
-from FinalProject.Log.Logger import Severity
-from FinalProject.mail import send_mail
+from Log.Logger import Severity
+from mail import send_mail
 
 broker_url = 'amqp://worker:king@18.193.6.223:32781/rhost'
 backend_url = f'db+postgresql+psycopg2://{DBManager.get_path()}'

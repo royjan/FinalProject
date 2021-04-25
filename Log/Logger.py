@@ -1,7 +1,7 @@
 from dictalchemy import make_class_dictable
 from sqlalchemy import Integer, Column, DateTime, String, func
 from sqlalchemy.ext.declarative import declarative_base
-from FinalProject.DBManager import DBManager
+from DBManager import DBManager
 
 Base = declarative_base()
 make_class_dictable(Base)

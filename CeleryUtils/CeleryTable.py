@@ -2,8 +2,8 @@ from dictalchemy import make_class_dictable
 from sqlalchemy import Column, DateTime, String, func, JSON
 from sqlalchemy.ext.declarative import declarative_base
 
-from FinalProject.DBManager import DBManager
-from FinalProject.Log.Logger import Severity, Logger, TaskType
+from DBManager import DBManager
+from Log.Logger import Severity, Logger, TaskType
 
 Base = declarative_base()
 make_class_dictable(Base)

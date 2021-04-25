@@ -5,7 +5,7 @@ from email.mime.base import MIMEBase
 from email import encoders
 import os
 
-from FinalProject.Log.Logger import Logger, TaskType
+from Log.Logger import Logger, TaskType
 
 EMAIL_ADDRESS = "roy.afeka.project@gmail.com"
 PASSWORD = "!Bj11235813"
