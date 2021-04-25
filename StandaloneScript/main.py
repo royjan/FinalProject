@@ -9,9 +9,9 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 
-from FinalProject.CeleryUtils import CeleryUtils
-from FinalProject.CeleryUtils.CeleryUtils import group_tasks
-from FinalProject.CeleryWorkerTask import train_worker, compare_models
+from CeleryUtils import CeleryUtils
+from CeleryUtils.CeleryUtils import group_tasks
+from CeleryWorkerTask import train_worker, compare_models
 
 
 def run_pc():

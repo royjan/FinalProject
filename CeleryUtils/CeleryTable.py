@@ -2,8 +2,8 @@ from dictalchemy import make_class_dictable
 from sqlalchemy import Column, DateTime, String, func, JSON
 from sqlalchemy.ext.declarative import declarative_base
 
-from FinalProject.DBManager import DBManager
-from FinalProject.Log.Logger import Severity, Logger, TaskType
+from DBManager import DBManager
+from Log.Logger import Severity, Logger, TaskType
 
 Base = declarative_base()
 make_class_dictable(Base)
@@ -26,7 +26,7 @@ class CeleryTable(Base):
 
     def update_best_model(self, workers):
         try:
-            from FinalProject.CeleryUtils.CeleryTableWorker import CeleryTableWorker, Statuses
+            from .CeleryUtils.CeleryTableWorker import CeleryTableWorker, Statuses
             models_result: [CeleryTableWorker] = [worker for worker in workers if worker.status == Statuses.FINISHED]
             best_model = sorted(models_result, key=lambda model: model.score, reverse=True)[0]
             if best_model:

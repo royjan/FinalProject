@@ -1,8 +1,8 @@
 import os
 
 import pandas as pd
-from FinalProject.DBManager import DBManager
-from FinalProject.Log.Logger import Logger
+from DBManager import DBManager
+from Log.Logger import Logger
 
 
 class DataManagement:
@@ -28,7 +28,7 @@ class DataManagement:
         return self._table
 
     def df_to_db(self, delete_local_file=False, replace_label=False):
-        from FinalProject.DBManager import DBManager
+        from .DBManager import DBManager
         if replace_label:
             self.df.rename(columns={self.label: self.LABEL_COLUMN}, inplace=True)
         self.df.to_sql(self.table_name, con=DBManager.engine, index=False, if_exists='replace', chunksize=100,
@@ -55,7 +55,7 @@ class DataManagement:
 
     @property
     def X_train(self):
-        from FinalProject.PreprocessData import PreprocessData
+        from .PreprocessData import PreprocessData
         if self.df is None:
             self.db_to_df()
         return self.df[~self.df[PreprocessData.TEST_COLUMN]].drop([self.LABEL_COLUMN, PreprocessData.TEST_COLUMN],
@@ -63,14 +63,14 @@ class DataManagement:
 
     @property
     def y_train(self):
-        from FinalProject.PreprocessData import PreprocessData
+        from .PreprocessData import PreprocessData
         if self.df is None:
             self.db_to_df()
         return self.df[~self.df[PreprocessData.TEST_COLUMN]][self.LABEL_COLUMN]
 
     @property
     def X_test(self):
-        from FinalProject.PreprocessData import PreprocessData
+        from .PreprocessData import PreprocessData
         if self.df is None:
             self.db_to_df()
         return self.df[self.df[PreprocessData.TEST_COLUMN]].drop([self.LABEL_COLUMN, PreprocessData.TEST_COLUMN],
@@ -78,7 +78,7 @@ class DataManagement:
 
     @property
     def y_test(self):
-        from FinalProject.PreprocessData import PreprocessData
+        from .PreprocessData import PreprocessData
         if self.df is None:
             self.db_to_df()
         return self.df[self.df[PreprocessData.TEST_COLUMN]][self.LABEL_COLUMN]

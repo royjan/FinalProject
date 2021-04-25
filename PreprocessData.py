@@ -4,7 +4,7 @@ from typing import Union, Iterable
 import numpy as np
 import pandas as pd
 
-from FinalProject.Log.Logger import Logger, Severity
+from Log.Logger import Logger, Severity
 
 
 class PreprocessData:

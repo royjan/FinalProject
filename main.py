@@ -2,14 +2,14 @@ from flask import Flask, render_template, request, session
 import os
 import threading
 from celery.result import AsyncResult
-from FinalProject.DBManager import DBManager
-from FinalProject.Log.Logger import Logger
-from FinalProject.CeleryUtils.CeleryUtils import group_tasks
-from FinalProject.CeleryWorkerTask import train_worker, compare_models
-from FinalProject.CeleryUtils import CeleryUtils
-from FinalProject.PreprocessData import PreprocessData
-from FinalProject.DataManager import DataManagement
-from FinalProject.Solvers.SolverFactory import SolverFactory
+from DBManager import DBManager
+from Log.Logger import Logger
+from CeleryUtils.CeleryUtils import group_tasks
+from CeleryWorkerTask import train_worker, compare_models
+from CeleryUtils import CeleryUtils
+from PreprocessData import PreprocessData
+from DataManager import DataManagement
+from Solvers.SolverFactory import SolverFactory
 
 payload = [
     {"class_name": "ScikitSolver",

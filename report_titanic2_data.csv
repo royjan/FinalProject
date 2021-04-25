@@ -1,0 +1,8 @@
+task_id,status,created_date,model_settings,model_results
+c602bb60-44fa-43d0-bdf2-35018f35f9b5,Failed,"23/04/2021, 14:42:43","{""model"": ""{}"", ""class_name"": ""ScikitSolver"", ""model_name"": ""AdaBoostClassifier""}",{}
+a7013b36-8bb4-495c-8172-0a446a7e6469,Failed,"23/04/2021, 14:42:43","{""model"": ""{}"", ""class_name"": ""ScikitSolver"", ""model_name"": ""MLPClassifier""}",{}
+0dc30dba-b1a2-473f-a702-f4187972e5d9,Failed,"23/04/2021, 14:42:43","{""model"": ""{}"", ""class_name"": ""ScikitSolver"", ""model_name"": ""DecisionTreeClassifier""}",{}
+d0b1f4fc-e02e-4a67-8b3f-402bf023e394,Failed,"23/04/2021, 14:42:43","{""model"": ""{}"", ""class_name"": ""ScikitSolver"", ""model_name"": ""KNeighborsClassifier""}",{}
+c437908e-b9b2-47ac-8889-34be3b918d73,Failed,"23/04/2021, 14:42:43","{""model"": ""{}"", ""class_name"": ""ScikitSolver"", ""model_name"": ""LogisticRegression""}",{}
+d26647e5-db6c-4629-9390-82025b2c51d9,Failed,"23/04/2021, 14:42:43","{""model"": ""{}"", ""class_name"": ""ScikitSolver"", ""model_name"": ""SVC""}",{}
+470b1476-05a4-41cf-a809-744390c337d1,Failed,"23/04/2021, 14:42:43","{""model"": ""{}"", ""class_name"": ""ScikitSolver"", ""model_name"": ""RandomForestClassifier""}",{}

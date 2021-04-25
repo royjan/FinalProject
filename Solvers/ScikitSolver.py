@@ -1,4 +1,4 @@
-from FinalProject.Solvers.SolversInterface import SolversInterface
+from Solvers.SolversInterface import SolversInterface
 
 
 class ScikitSolver(SolversInterface):
