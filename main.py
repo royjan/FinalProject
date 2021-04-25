@@ -1,6 +1,11 @@
+import sys
 from flask import Flask, render_template, request, session
 import os
 import threading
+
+sys.path.append('/home/ubuntu/FinalProject')
+sys.path.append('/home/ubuntu')
+
 from celery.result import AsyncResult
 from FinalProject.DBManager import DBManager
 from FinalProject.Log.Logger import Logger
