@@ -6,10 +6,12 @@ class SolverFactory:
     @staticmethod
     def import_subclasses():
         import os
-        root_path = "FinalProject.Solvers"
+        root_path = "FinalProject/Solvers"
         root_path = os.path.join(os.getcwd(), root_path)
         print(root_path)
-        modules = [classname[:-3] for classname in os.listdir(root_path) if not classname.startswith("_")]
+        modules = [classname[:-3].replace("/", ".") for classname in os.listdir(root_path) if
+                   not classname.startswith("_")]
+        print(modules)
         for solver in modules:
             if solver not in ['SolverFactory', 'SolversInterface']:
                 importlib.import_module(f"FinalProject.Solvers.{solver}")
