@@ -89,4 +89,5 @@ def train_worker(self, config: dict, dataset_name: str):
         worker.print(repr(ex), Severity.ERROR)
     finally:
         worker.update_db()
+        worker.print(f"Worker {config['class_name']} is done", severity=Severity.INFO)
     return {"task_id": worker.task_id}
