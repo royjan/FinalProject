@@ -7,10 +7,8 @@ class SolverFactory:
     def import_subclasses():
         import os
         root_path = "Solvers"
-        if False:
-            root_path = os.path.join("FinalProject", root_path)
-        modules = [classname[:-3] for classname in os.listdir(os.path.join(os.getcwd(), root_path)) if
-                   not classname.startswith("_")]
+        root_path = os.path.join(os.getcwd(), root_path)
+        modules = [classname[:-3] for classname in os.listdir(root_path) if not classname.startswith("_")]
         for solver in modules:
             if solver not in ['SolverFactory', 'SolversInterface']:
                 importlib.import_module(f"FinalProject.Solvers.{solver}")

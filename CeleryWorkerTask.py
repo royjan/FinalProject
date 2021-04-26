@@ -74,6 +74,7 @@ def train_worker(self, config: dict, dataset_name: str):
     my_task_id = self.request.id
     worker = CeleryTableWorker(task_id=my_task_id, status=Statuses.STARTED, model_settings=config)
     worker.update_db()
+    worker.print("Celery worker is starting", severity=Severity.DEBUG)
     data = DataManagement(title=dataset_name)
     try:
         solver: SolversInterface = SolverFactory.get_solver_by_name(config)

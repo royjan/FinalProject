@@ -53,7 +53,7 @@ def run_worker():
                {'model': '{}', 'class_name': 'ScikitSolver', 'model_name': 'MLPClassifier'},
                {'model': '{}', 'class_name': 'ScikitSolver', 'model_name': 'KNeighborsClassifier'},
                {'model': '{}', 'class_name': 'ScikitSolver', 'model_name': 'SVC'}]
-    dataset_name = 'test_program_3'
+    dataset_name = 'test_program3'
     group = group_tasks(train_worker, payload, dataset_name)
     agent = CeleryUtils.create_chords(group, compare_models, dataset_name=dataset_name)
     agent.apply_async(queue='test')
@@ -61,8 +61,6 @@ def run_worker():
 
 
 if __name__ == "__main__":
-    print("Running the standalone script with run_pc")
-    run_pc()
     print("Running the standalone script with Woker")
     run_worker()
 
