@@ -51,8 +51,7 @@ def run_worker():
                {'model': '{}', 'class_name': 'ScikitSolver', 'model_name': 'RandomForestClassifier'},
                {'model': '{}', 'class_name': 'ScikitSolver', 'model_name': 'AdaBoostClassifier'},
                {'model': '{}', 'class_name': 'ScikitSolver', 'model_name': 'MLPClassifier'},
-               {'model': '{}', 'class_name': 'ScikitSolver', 'model_name': 'KNeighborsClassifier'},
-               {'model': '{}', 'class_name': 'ScikitSolver', 'model_name': 'SVC'}]
+               {'model': '{}', 'class_name': 'ScikitSolver', 'model_name': 'KNeighborsClassifier'}]
     dataset_name = 'test_program3'
     group = group_tasks(train_worker, payload, dataset_name)
     agent = CeleryUtils.create_chords(group, compare_models, dataset_name=dataset_name)
