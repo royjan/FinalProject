@@ -8,6 +8,7 @@ class SolverFactory:
         import os
         root_path = "Solvers"
         root_path = os.path.join(os.getcwd(), root_path)
+        print(root_path)
         modules = [classname[:-3] for classname in os.listdir(root_path) if not classname.startswith("_")]
         for solver in modules:
             if solver not in ['SolverFactory', 'SolversInterface']:
