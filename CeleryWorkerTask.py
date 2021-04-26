@@ -36,7 +36,8 @@ def create_report(workers: [CeleryTableWorker], dataset_name: str):
     df = df.iloc[df['model_results'].str.get('score').fillna(-1).astype(int).argsort()[::-1]]
     df.to_csv(file_name_csv, index=False)
     body = f"best_model for {dataset_name}: {df.iloc[0].model_settings}"
-    send_mail('royjan2007@gmail.com', body, f"Score Report - {dataset_name.capitalize()}", file_name_csv, False)
+    send_mail(['royjan2007@gmail.com', 'roybargil@gmail.com'], body, f"Score Report - {dataset_name.capitalize()}",
+              file_name_csv, False)
 
 
 class CeleryWorkerTask:

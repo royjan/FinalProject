@@ -11,10 +11,10 @@ EMAIL_ADDRESS = "roy.afeka.project@gmail.com"
 PASSWORD = "!Bj11235813"
 
 
-def send_mail(to_addr, body, subject, file_name=None, delete_after_send=True):
+def send_mail(to_addr: list, body, subject, file_name=None, delete_after_send=True):
     message = MIMEMultipart()
     message['From'] = EMAIL_ADDRESS
-    message['To'] = to_addr
+    message['To'] = ','.join(to_addr)
     message['Subject'] = subject
     message.attach(MIMEText(body, 'plain'))
     if file_name:
