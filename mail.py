@@ -24,7 +24,7 @@ def send_mail(to_addr, body, subject, file_name=None, delete_after_send=True):
         encoders.encode_base64(payload)
         payload.add_header('Content-Disposition', 'attachment', filename=os.path.basename(file_name))
         message.attach(payload)
-    session = smtplib.SMTP('smtp.gmail.com', 587)
+    session = smtplib.SMTP_SSL('smtp.gmail.com', 587)
     session.starttls()
     session.login(EMAIL_ADDRESS, PASSWORD)
     text = message.as_string()
