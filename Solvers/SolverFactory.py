@@ -6,7 +6,7 @@ class SolverFactory:
     @staticmethod
     def import_subclasses():
         import os
-        root_path = "Solvers"
+        root_path = "FinalProject.Solvers"
         root_path = os.path.join(os.getcwd(), root_path)
         print(root_path)
         modules = [classname[:-3] for classname in os.listdir(root_path) if not classname.startswith("_")]
