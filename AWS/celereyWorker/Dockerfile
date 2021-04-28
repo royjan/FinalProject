@@ -9,11 +9,12 @@ RUN apt-get -y upgrade
 RUN mkdir -p /FinalPro/Worker
 WORKDIR /FinalPro/Worker
 
-COPY ../FinalProject ./
+COPY . .
 
 #install all the reqvierment 
-RUN pip3 install --user --upgrade -r requirements.txt --use-deprecated=legacy-resolver
+RUN pip3 install --user --upgrade -r src/requirements.txt --use-deprecated=legacy-resolver
 
 ENV PYTHONPATH /FinalPro/Worker
+
 #run the celery worker 
 CMD ["/bin/sh", "-c","sudo celery -A FinalProject.CeleryWorkerTask worker -Q test --concurrency=1"]
