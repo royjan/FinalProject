@@ -7,7 +7,7 @@ sys.path.append('FinalProject')
 import numpy as np
 import pandas as pd
 
-from FinalProject.Log.Logger import Logger, Severity
+from FinalProject.src.Log.Logger import Logger, Severity
 
 
 class PreprocessData:

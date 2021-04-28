@@ -12,9 +12,11 @@ WORKDIR /Worker/FinalProject
 COPY . .
 
 #install all the reqvierment 
+RUN pip3 install --no-cache-dir --upgrade pip
+
 RUN pip3 install --user --upgrade -r src/requirements.txt --use-deprecated=legacy-resolver
 
-ENV PYTHONPATH /Worker/FinalProject
+ENV PYTHONPATH "${PYTHONPATH}:/Worker/FinalProject"
 
 #run the celery worker 
 CMD ["/bin/sh", "-c","celery -A ../FinalProject.CeleryWorkerTask worker -Q test --concurrency=1"]

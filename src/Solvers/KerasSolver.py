@@ -1,7 +1,7 @@
 import sys
 sys.path.append('FinalProject')
 
-from FinalProject.Solvers.SolversInterface import SolversInterface
+from FinalProject.src.Solvers.SolversInterface import SolversInterface
 
 
 class KerasSolver(SolversInterface):
