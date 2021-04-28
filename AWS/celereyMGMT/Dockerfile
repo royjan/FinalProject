@@ -9,7 +9,7 @@ RUN apt-get -y upgrade
 RUN mkdir -p /FinalPro/MGMT
 WORKDIR /FinalPro/MGMT
 
-COPY /FinalProject ./
+COPY . .
 
 #install all the reqvierment 
 RUN pip3 install --user --upgrade -r requirements.txt --use-deprecated=legacy-resolver
