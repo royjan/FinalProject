@@ -1,3 +1,6 @@
+import sys
+sys.path.append('FinalProject')
+
 class SolversInterface:
     model_obj = None
     NAME = "SolversInterface"

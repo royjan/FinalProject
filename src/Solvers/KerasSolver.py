@@ -1,3 +1,6 @@
+import sys
+sys.path.append('FinalProject')
+
 from FinalProject.Solvers.SolversInterface import SolversInterface
 
 

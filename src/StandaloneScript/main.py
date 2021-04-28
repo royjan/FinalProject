@@ -1,9 +1,7 @@
 import sys
 
 # add path to bash
-sys.path.append('/home/ubuntu/FinalProject')
-sys.path.append('/home/ubuntu')
-
+sys.path.append('FinalProject')
 import time
 
 import pandas as pd
@@ -14,9 +12,9 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.tree import DecisionTreeClassifier
 
-from FinalProject.CeleryUtils import CeleryUtils
-from FinalProject.CeleryUtils.CeleryUtils import group_tasks
-from FinalProject.CeleryWorkerTask import train_worker, compare_models
+from FinalProject.src.CeleryUtils import CeleryUtils
+from FinalProject.src.CeleryUtils.CeleryUtils import group_tasks
+from FinalProject.src.CeleryWorkerTask import train_worker, compare_models
 
 
 def run_pc():

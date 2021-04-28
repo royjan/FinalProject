@@ -3,8 +3,7 @@ from flask import Flask, render_template, request, session
 import os
 import threading
 
-sys.path.append('/home/ubuntu/FinalProject')
-sys.path.append('/home/ubuntu')
+sys.path.append('FinalProject')
 
 from celery.result import AsyncResult
 from FinalProject.DBManager import DBManager

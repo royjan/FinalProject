@@ -1,3 +1,6 @@
+import sys
+sys.path.append('FinalProject')
+
 from dictalchemy import make_class_dictable
 from sqlalchemy import Integer, Column, DateTime, String, func
 from sqlalchemy.ext.declarative import declarative_base

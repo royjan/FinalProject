@@ -1,6 +1,9 @@
 import os
 from typing import Union, Iterable
 
+import sys
+sys.path.append('FinalProject')
+
 import numpy as np
 import pandas as pd
 

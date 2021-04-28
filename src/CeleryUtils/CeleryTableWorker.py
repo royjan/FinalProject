@@ -1,4 +1,6 @@
 from typing import Iterable
+import sys
+sys.path.append('FinalProject')
 
 from dictalchemy import make_class_dictable
 from sqlalchemy import Column, DateTime, String, JSON, func

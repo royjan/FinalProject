@@ -1,4 +1,6 @@
 import importlib
+import sys
+sys.path.append('FinalProject')
 
 
 class SolverFactory:
@@ -6,17 +8,17 @@ class SolverFactory:
     @staticmethod
     def import_subclasses():
         import os
-        root_path = "FinalProject/Solvers"
+        root_path = "FinalProject.src/Solvers"
         root_path = os.path.join(os.getcwd(), root_path)
         modules = [classname[:-3].replace("/", ".") for classname in os.listdir(root_path) if
                    not classname.startswith("_")]
         for solver in modules:
             if solver not in ['SolverFactory', 'SolversInterface']:
-                importlib.import_module(f"FinalProject.Solvers.{solver}")
+                importlib.import_module(f"FinalProject.src.Solvers.{solver}")
 
     @classmethod
     def get_solvers(cls) -> dict:
-        from FinalProject.Solvers.SolversInterface import SolversInterface
+        from FinalProject.src.Solvers.SolversInterface import SolversInterface
         cls.import_subclasses()
         return SolversInterface.get_solvers()
 
