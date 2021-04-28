@@ -2,7 +2,15 @@
 
 this reposetory contains all the AWS config , Docker and K8s files
 
-## 
+# Building the Docker fild 
+    #in 1st run there is a need to compile the difrent docker files 
+    in the folder of ther requierd container run
+
+    sudo docker build -t <CONTAINER_NAME> .
+    
+    _Note_:
+    the container name are as the Folder name
+
 
     git checkout 0.4.0
     docker build -t quay.io/kubernetes-for-developers/celery-worker:0.4.0 .
