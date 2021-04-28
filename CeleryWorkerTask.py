@@ -19,6 +19,9 @@ app.conf.task_queues = [Queue('test', durable=True, routing_key='test')]
 
 @app.task(bind=True)
 def compare_models(self, *server_answers, **params):
+    """
+        report creation - compare between models and sending the report through email
+    """
     dataset_name = params.get('dataset_name')
     my_task_id = self.request.id
     result_ids = {response.get('task_id') for arg in server_answers for response in arg}
@@ -26,16 +29,23 @@ def compare_models(self, *server_answers, **params):
     statuses = {worker.task_id: worker.status for worker in workers}
     agent = CeleryTable(group_task_id=my_task_id, status=statuses, title=dataset_name)
     agent.update_best_model(workers)
+    agent.print("Workers are done!")
     create_report(workers, dataset_name)
 
 
 def create_report(workers: [CeleryTableWorker], dataset_name: str):
+    """
+    :param workers: workers data
+    :param dataset_name: the title of the data
+    create the report by workers data and send through email
+    """
     file_name_csv = f'report_{dataset_name}.csv'
     df = pd.DataFrame([worker.as_dict() for worker in workers])
     df = df.iloc[df['model_results'].str.get('score').fillna(-1).astype(int).argsort()[::-1]]
     df.to_csv(file_name_csv, index=False)
     body = f"best_model for {dataset_name}: {df.iloc[0].model_settings}"
-    send_mail('royjan2007@gmail.com', body, f"Score Report - {dataset_name.capitalize()}", file_name_csv, False)
+    send_mail(['royjan2007@gmail.com', 'roybargil@gmail.com'], body, f"Score Report - {dataset_name.capitalize()}",
+              file_name_csv, False)
 
 
 class CeleryWorkerTask:
@@ -70,9 +80,14 @@ class CeleryWorkerTask:
 
 @app.task(bind=True)
 def train_worker(self, config: dict, dataset_name: str):
+    """
+        Each worker is fit X,y and store the score.
+        Score is JSON for future.. if we want to measure more than AUC score (f1 and etc...)
+    """
     my_task_id = self.request.id
     worker = CeleryTableWorker(task_id=my_task_id, status=Statuses.STARTED, model_settings=config)
     worker.update_db()
+    worker.print("Celery worker is starting", severity=Severity.DEBUG)
     data = DataManagement(title=dataset_name)
     try:
         solver: SolversInterface = SolverFactory.get_solver_by_name(config)
@@ -87,4 +102,5 @@ def train_worker(self, config: dict, dataset_name: str):
         worker.print(repr(ex), Severity.ERROR)
     finally:
         worker.update_db()
+        worker.print(f"Worker {config['class_name']} is done", severity=Severity.INFO)
     return {"task_id": worker.task_id}

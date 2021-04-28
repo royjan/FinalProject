@@ -3,12 +3,12 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 
 
 class DBManager:
-    user_name = "root"
-    password = "258258"
-    scheme = "exam"
+    user_name = "postgres"
+    password = "king"
+    scheme = "postgres"
     port = "5432"
     protocol = "postgres"
-    url = "localhost"
+    url = "ec2-54-93-249-101.eu-central-1.compute.amazonaws.com"
 
     engine = create_engine(
         f'{protocol}://{user_name}:{password}@{url}:{port}/{scheme}',
@@ -26,7 +26,7 @@ class DBManager:
         return cls.db_scoped_session()
 
     @classmethod
-    def reflect_table(cls, table_name):
+    def reflect_table(cls, table_name):  # get table as object from name
         from sqlalchemy import MetaData
         metadata = MetaData(bind=cls.engine)
         metadata.reflect(only=[table_name])

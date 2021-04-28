@@ -16,6 +16,9 @@ class KerasSolver(SolversInterface):
         self.optimizer_info = {'loss': 'binary_crossentropy', 'optimizer': 'adam', 'metrics': ['accuracy']}
 
     def build_image_generator(self):
+        """
+            Image Generator: create an image generator -> nice to have
+        """
         import tensorflow as tf
         self.generator = tf.keras.preprocessing.image.ImageDataGenerator(
             featurewise_center=False,

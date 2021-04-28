@@ -1,0 +1,2 @@
+task_id,status,created_date,model_settings,model_results
+d9cd818c-ead8-4628-be3a-305bd222d364,Finished,"22/03/2021, 13:35:50","{""model"": ""{""C"":1}"", ""class_name"": ""ScikitSolver"", ""model_name"": ""SVC""}","{""score"": 0.5357142857142857}"
