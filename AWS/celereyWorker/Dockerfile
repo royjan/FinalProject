@@ -12,9 +12,9 @@ WORKDIR /Worker/FinalProject
 COPY . .
 
 #install all the reqvierment 
-RUN pip3 install --no-cache-dir --upgrade pip
+RUN pip3 -m install --no-cache-dir --upgrade pip
 
-RUN pip3 install --user --upgrade -r src/requirements.txt --use-deprecated=legacy-resolver 
+RUN pip3 -m install --user --upgrade -r src/requirements.txt --use-deprecated=legacy-resolver 
 
 ENV PYTHONPATH "${PYTHONPATH}:/Worker/FinalProject"
 
