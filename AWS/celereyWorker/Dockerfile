@@ -17,4 +17,4 @@ RUN pip3 install --user --upgrade -r src/requirements.txt --use-deprecated=legac
 ENV PYTHONPATH /FinalPro/Worker
 
 #run the celery worker 
-CMD ["/bin/sh", "-c","sudo celery -A FinalProject.CeleryWorkerTask worker -Q test --concurrency=1"]
+CMD ["/bin/sh", "-c","celery -A FinalProject.CeleryWorkerTask worker -Q test --concurrency=1"]

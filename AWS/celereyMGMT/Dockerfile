@@ -9,14 +9,11 @@ RUN apt-get -y upgrade
 RUN mkdir -p /FinalPro/MGMT
 WORKDIR /FinalPro/MGMT
 
-#cloming the repo
-#CMD ["/bin/sh", "sudo git clone https://github.com/royjan/FinalProject.git"]
-
-COPY ./ ./
+COPY . .
 
 #install all the reqvierment 
-RUN pip3 install --user --upgrade -r src/requirements.txt --use-deprecated=legacy-resolver
+RUN pip3 install --user --upgrade -r requirements.txt --use-deprecated=legacy-resolver
 
 ENV PYTHONPATH /FinalPro/MGMT
 #run the celery worker 
-CMD ["/bin/sh", "-c","sudo python3  src/main.py"]
+CMD ["/bin/sh", "-c","python3 src/main.py"]
