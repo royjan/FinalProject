@@ -6,14 +6,18 @@ FROM python:3
 RUN apt-get -y upgrade
 
 # make a directory for our application as our workdir
-RUN mkdir -p /FinalPro/MGMT
-WORKDIR /FinalPro/MGMT
+RUN mkdir -p /MGMT/FinalProject
+WORKDIR /MGMT/FinalProject
 
 COPY . .
 
 #install all the reqvierment 
 RUN pip3 install --user --upgrade -r src/requirements.txt --use-deprecated=legacy-resolver
 
-ENV PYTHONPATH /FinalPro/MGMT
+ENV PYTHONPATH /MGMT/FinalProject
+
+#exspose port 5000 for webserver 
+
+EXPOSE 5000
 #run the celery worker 
 CMD ["/bin/sh", "-c","python3 src/main.py"]

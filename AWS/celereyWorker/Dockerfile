@@ -6,15 +6,15 @@ FROM python:3
 RUN apt-get -y upgrade
 
 # make a directory for our application as our workdir
-RUN mkdir -p /FinalPro/Worker
-WORKDIR /FinalPro/Worker
+RUN mkdir -p /Worker/FinalProject
+WORKDIR /Worker/FinalProject
 
 COPY . .
 
 #install all the reqvierment 
 RUN pip3 install --user --upgrade -r src/requirements.txt --use-deprecated=legacy-resolver
 
-ENV PYTHONPATH /FinalPro/Worker
+ENV PYTHONPATH /Worker/FinalProject
 
 #run the celery worker 
-CMD ["/bin/sh", "-c","celery -A FinalProject.CeleryWorkerTask worker -Q test --concurrency=1"]
+CMD ["/bin/sh", "-c","celery -A ../FinalProject.CeleryWorkerTask worker -Q test --concurrency=1"]
