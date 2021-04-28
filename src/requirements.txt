@@ -11,5 +11,5 @@ psycopg2-binary
 kombu
 pandas-profiling
 flask
-jinja2
+jinja2>=2.11.1
 postgres
