@@ -1,0 +1,15 @@
+tensorflow
+pandas
+numpy
+sqlalchemy
+dictalchemy
+sklearn-json
+celery
+sklearn
+pymysql
+psycopg2-binary
+kombu
+pandas-profiling
+flask
+jinja2
+postgres
