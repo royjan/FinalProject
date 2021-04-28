@@ -12,8 +12,7 @@ WORKDIR /usr/src/MGMT
 COPY . ./FinalProject
 
 #install all the reqvierment 
-RUN pip3 install --upgrade pip
-RUN pip3 install -r FinalProject/src/requirements.txt --use-deprecated=legacy-resolver && pip3 install -e ./ \
+RUN pip3 install -r FinalProject/src/requirements.txt --use-deprecated=legacy-resolver 
 
 ENV PYTHONPATH "${PYTHONPATH}:/MGMT/FinalProject"
 
@@ -21,4 +20,4 @@ ENV PYTHONPATH "${PYTHONPATH}:/MGMT/FinalProject"
 EXPOSE 5000
 
 #run the celery worker 
-CMD ["/bin/sh", "-c","python3 FinalProject/src/main.py"]
+CMD ["python3", "FinalProject/src/main.py"]
