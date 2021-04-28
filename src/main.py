@@ -6,14 +6,14 @@ import threading
 sys.path.append('FinalProject')
 
 from celery.result import AsyncResult
-from FinalProject.DBManager import DBManager
-from FinalProject.Log.Logger import Logger
-from FinalProject.CeleryUtils.CeleryUtils import group_tasks
-from FinalProject.CeleryWorkerTask import train_worker, compare_models
-from FinalProject.CeleryUtils import CeleryUtils
-from FinalProject.PreprocessData import PreprocessData
-from FinalProject.DataManager import DataManagement
-from FinalProject.Solvers.SolverFactory import SolverFactory
+from FinalProject.src.DBManager import DBManager
+from FinalProject.src.Log.Logger import Logger
+from FinalProject.src.CeleryUtils.CeleryUtils import group_tasks
+from FinalProject.src.CeleryWorkerTask import train_worker, compare_models
+from FinalProject.src.CeleryUtils import CeleryUtils
+from FinalProject.src.PreprocessData import PreprocessData
+from FinalProject.src.DataManager import DataManagement
+from FinalProject.src.Solvers.SolverFactory import SolverFactory
 
 payload = [
     {"class_name": "ScikitSolver",
