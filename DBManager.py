@@ -26,13 +26,9 @@ class DBManager:
         return cls.db_scoped_session()
 
     @classmethod
-    def reflect_table(cls, table_name):
+    def reflect_table(cls, table_name):  # get table as object from name
         from sqlalchemy import MetaData
         metadata = MetaData(bind=cls.engine)
         metadata.reflect(only=[table_name])
         table = metadata.tables[table_name]
         return table
-
-
-if __name__ == '__main__':
-    DBManager.get_session().execute("SELECT 1")

@@ -1,9 +1,8 @@
-
 import sys
 
+# add path to bash
 sys.path.append('/home/ubuntu/FinalProject')
 sys.path.append('/home/ubuntu')
-
 
 import time
 
@@ -13,7 +12,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neural_network import MLPClassifier
-from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 
 from FinalProject.CeleryUtils import CeleryUtils
@@ -23,7 +21,6 @@ from FinalProject.CeleryWorkerTask import train_worker, compare_models
 
 def run_pc():
     start = time.time()
-    modelTime = 0  
     df = pd.read_csv('test_program3_data_202104242122.csv')
     X = df.drop('label', axis=1)
     y = df['label']
@@ -40,7 +37,8 @@ def run_pc():
         model.fit(X, y)
         y_pred = model.predict(X_test)
         result.update({model_lib: roc_auc_score(y_test, y_pred, multi_class="ovr")})
-        print("T:%4.2fS t: %4.2fs  Finished Model %40s - V "%(time.time()- start, time.time()- modelTime,str(model_lib)))
+        print("T:%4.2fS t: %4.2fs  Finished Model %40s - V " % (
+        time.time() - start, time.time() - modelTime, str(model_lib)))
     print(time.time() - start)
     print(result)
 
@@ -58,8 +56,6 @@ def run_worker():
     agent.apply_async(queue='test')
 
 
-
 if __name__ == "__main__":
     print("Running the standalone script with Woker")
     run_worker()
-

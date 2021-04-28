@@ -12,6 +12,13 @@ PASSWORD = "!Bj11235813"
 
 
 def send_mail(to_addr: list, body, subject, file_name=None, delete_after_send=True):
+    """
+    :param to_addr: multiple emails
+    :param body: content of the message
+    :param subject: title of the mail
+    :param file_name: if we want to attach file
+    :param delete_after_send: do we want to delete file after mail sent
+    """
     message = MIMEMultipart()
     message['From'] = EMAIL_ADDRESS
     message['To'] = ','.join(to_addr)

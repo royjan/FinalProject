@@ -19,6 +19,9 @@ app.conf.task_queues = [Queue('test', durable=True, routing_key='test')]
 
 @app.task(bind=True)
 def compare_models(self, *server_answers, **params):
+    """
+        report creation - compare between models and sending the report through email
+    """
     dataset_name = params.get('dataset_name')
     my_task_id = self.request.id
     result_ids = {response.get('task_id') for arg in server_answers for response in arg}
@@ -31,6 +34,11 @@ def compare_models(self, *server_answers, **params):
 
 
 def create_report(workers: [CeleryTableWorker], dataset_name: str):
+    """
+    :param workers: workers data
+    :param dataset_name: the title of the data
+    create the report by workers data and send through email
+    """
     file_name_csv = f'report_{dataset_name}.csv'
     df = pd.DataFrame([worker.as_dict() for worker in workers])
     df = df.iloc[df['model_results'].str.get('score').fillna(-1).astype(int).argsort()[::-1]]
@@ -72,6 +80,10 @@ class CeleryWorkerTask:
 
 @app.task(bind=True)
 def train_worker(self, config: dict, dataset_name: str):
+    """
+        Each worker is fit X,y and store the score.
+        Score is JSON for future.. if we want to measure more than AUC score (f1 and etc...)
+    """
     my_task_id = self.request.id
     worker = CeleryTableWorker(task_id=my_task_id, status=Statuses.STARTED, model_settings=config)
     worker.update_db()

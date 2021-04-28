@@ -124,6 +124,9 @@ def save_and_get_file_names():
 
 @app.route('/upload', methods=['POST'])
 def upload():
+    """
+        upload files to database and create a report
+    """
     def get_columns_name(_title):
         table = DBManager.reflect_table(f'{_title}_data')
         return [str(column.key) for column in table.c if str(column.key) != PreprocessData.TEST_COLUMN]
@@ -145,6 +148,15 @@ def upload():
 
 @app.route('/preprocess', methods=['POST'])
 def preprocess():
+    """
+        preprocess the data:
+        # split train test if only train set uploaded
+        # impute to NaN values
+        # SMOTE for balance classes
+        # filter features by correlation to label
+        # OHE for categorical data
+        upload to database
+    """
     pp = PreprocessData(label=request.form['label'], title=session['title'])
     data = DataManagement()
     data.set_data_from_preprocess_object(pp)
@@ -165,6 +177,9 @@ def preprocess():
 
 
 def parsing_request():
+    """
+        each pair (model and params) is parsed to dictionaries
+    """
     payloads = []
     for num in range(len(request.form) // 2):
         _payload = {}
@@ -178,6 +193,9 @@ def parsing_request():
 
 @app.route('/get_celery_status', methods=['POST'])
 def get_celery_status():
+    """
+        nice to have: what is the progress of my celery task
+    """
     state = None
     try:
         task_id = request.args.get('task_id') or request.json.get('task_id')
@@ -191,6 +209,9 @@ def get_celery_status():
 
 @app.route('/train', methods=['POST'])
 def train():
+    """
+        create multiple tasks by single tasks and callback with report creation
+    """
     from flask import session
     payload = parsing_request()
     group = group_tasks(train_worker, payload, session['title'])
