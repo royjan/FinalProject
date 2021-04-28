@@ -12,8 +12,8 @@ WORKDIR /Worker
 COPY . .
 
 #install all the reqvierment 
-RUN pip3 -m install --upgrade pip
-RUN pip3 -m install -r src/requirements.txt --use-deprecated=legacy-resolver 
+RUN pip3 install --upgrade pip
+RUN pip3 install -r src/requirements.txt --use-deprecated=legacy-resolver 
 
 ENV PYTHONPATH "${PYTHONPATH}:/Worker/FinalProject"
 
