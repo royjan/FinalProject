@@ -13,7 +13,7 @@ COPY . ./FinalProject
 
 #install all the reqvierment 
 RUN pip3 install --no-cache-dir --upgrade pip
-RUN pip3 install --user --upgrade -r FinalProject/src/requirements.txt --use-deprecated=legacy-resolver --no-warn-script-location.
+RUN pip3 install --user --upgrade -r FinalProject/src/requirements.txt --use-deprecated=legacy-resolver 
 
 ENV PYTHONPATH "${PYTHONPATH}:/MGMT/FinalProject"
 
