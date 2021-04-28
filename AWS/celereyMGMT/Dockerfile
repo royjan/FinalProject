@@ -6,14 +6,14 @@ FROM python:3
 RUN apt-get -y upgrade
 
 # make a directory for our application as our workdir
-RUN mkdir -p /MGMT/FinalProject
-WORKDIR /MGMT
+RUN mkdir -p usr/src/MGMT/FinalProject
+WORKDIR /usr/src/MGMT
 
 COPY . ./FinalProject
 
 #install all the reqvierment 
 RUN pip3 install --upgrade pip
-RUN pip3 install -r FinalProject/src/requirements.txt --use-deprecated=legacy-resolver 
+RUN pip3 install -r FinalProject/src/requirements.txt --use-deprecated=legacy-resolver && pip3 install -e ./ \
 
 ENV PYTHONPATH "${PYTHONPATH}:/MGMT/FinalProject"
 

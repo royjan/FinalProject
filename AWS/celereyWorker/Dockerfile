@@ -6,8 +6,8 @@ FROM python:3
 RUN apt-get -y upgrade
 
 # make a directory for our application as our workdir
-RUN mkdir -p /Worker/FinalProject
-WORKDIR /Worker
+RUN mkdir -p usr/src/Worker/FinalProject
+WORKDIR /usr/src/Worker
 
 COPY . .
 
