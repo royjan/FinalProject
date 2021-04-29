@@ -25,6 +25,6 @@ RUN pip3 install -r FinalProject/src/requirements.txt
 ENV PYTHONPATH "${PYTHONPATH}:/Worker/FinalProject"
 
 #run the celery worker 
-CMD ["python3", ,"celery -A FinalProject.CeleryWorkerTask worker -Q test --concurrency=1"]
+#CMD ["python3", ,"celery -A FinalProject.CeleryWorkerTask worker -Q test --concurrency=1"]
 
-#CMD ["/bin/sh", "-c","celery -A FinalProject.CeleryWorkerTask worker -Q test --concurrency=1"]
+CMD ["/bin/sh", "-c","celery -A FinalProject.CeleryWorkerTask worker -Q test --concurrency=1"]
