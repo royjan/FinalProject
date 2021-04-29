@@ -20,7 +20,7 @@ COPY . ./FinalProject
 
 
 #install all the reqvierment 
-RUN pip3 install -r src/requirements.txt  
+RUN pip3 install -r FinalProject/src/requirements.txt  
 
 ENV PYTHONPATH "${PYTHONPATH}:/Worker/FinalProject"
 

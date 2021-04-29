@@ -7,6 +7,7 @@ sudo docker build -t celery_worker -f AWS/celereyWorker/Dockerfile . ;
 
 # sudo docker run -i celery_worker
 
+#sudo docker system prune -a
 
 
 
