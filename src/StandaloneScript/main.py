@@ -1,7 +1,8 @@
 import sys
 
 # add path to bash
-sys.path.append('FinalProject')
+sys.path.append('/home/ubuntu/FinalProject')
+sys.path.append('/home/ubuntu')
 import time
 
 import pandas as pd
@@ -55,5 +56,6 @@ def run_worker():
 
 
 if __name__ == "__main__":
-    print("Running the standalone script with Woker")
+    #print("Running the standalone script with Woker")
     run_worker()
+    #run_pc()
