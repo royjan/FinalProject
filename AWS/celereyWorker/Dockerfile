@@ -1,18 +1,26 @@
 
 # load any public updates from python packages
-FROM python:3
+FROM python:3.8-slim-buster 
+
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # upgrade any existing packages that can been updated
-RUN apt-get -y upgrade
+RUN /opt/venv/bin/python3 -m pip install --upgrade pip
+
+#added app user and setup
+#RUN useradd --create-home celwork
 
 # make a directory for our application as our workdir
 RUN mkdir -p usr/src/Worker/FinalProject
 WORKDIR /usr/src/Worker
 
-COPY . .
+COPY . ./FinalProject
+
 
 #install all the reqvierment 
-RUN pip3 install -r src/requirements.txt --use-deprecated=legacy-resolver 
+RUN pip3 install -r src/requirements.txt  
 
 ENV PYTHONPATH "${PYTHONPATH}:/Worker/FinalProject"
 

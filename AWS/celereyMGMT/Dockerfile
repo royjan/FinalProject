@@ -24,8 +24,8 @@ COPY . ./FinalProject
 RUN pip3 install -r FinalProject/src/requirements.txt
 
 #test
-RUN useradd --create-home celwork
-USER celwork
+#RUN useradd --create-home celwork
+#USER celwork
 
 ENV PYTHONPATH "${PYTHONPATH}:/MGMT/FinalProject"
 
