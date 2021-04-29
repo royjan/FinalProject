@@ -1,0 +1,16 @@
+tensorflow
+pandas
+numpy~=1.19.2
+sqlalchemy
+dictalchemy
+sklearn-json
+celery
+sklearn
+pymysql
+psycopg2-binary
+kombu
+pandas-profiling
+flask
+jinja2
+SQLAlchemy
+postgres
