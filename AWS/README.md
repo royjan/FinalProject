@@ -1,27 +1,31 @@
 # Final-Project-AWS
 
-this reposetory contains all the AWS config , Docker and K8s files
+    this sub-repo contains all the config for AWS for the grid-scale project
 
 # Building the Docker fild 
     #in 1st run there is a need to compile the difrent docker files 
-    in the folder of ther requierd container run
+    #in the folder of ther requierd container run
 
     sudo docker build -t <CONTAINER_NAME> .
     
-    _Note_:
-    the container name are as the Folder name
+    for exmple 
+    #create the mgmt imag
+    sudo docker build -t celery_mgmt -f AWS/celereyMGMT/Dockerfile . 
+#   create the worker img
+    sudo docker build -t celery_worker -f AWS/celereyWorker/Dockerfile . 
+
+#   running the dockers 
+    # sudo docker run -i celery_mgmt -p 5000:5000/tcp
+
+    # sudo docker run -i celery_worker
 
 
-    git checkout 0.4.0
-    docker build -t quay.io/kubernetes-for-developers/celery-worker:0.4.0 .
-    #git checkout master
-    docker build -t quay.io/kubernetes-for-developers/celery-worker:latest .
-    docker push quay.io/kubernetes-for-developers/celery-worker
+    #clean command , will delete all docker related config on your system (used to clean ceche befoure instance termination)
+    #sudo docker system prune -a
+
 
 # Running the Cluster
-    kubectl run -i --tty \
-    --image quay.io/kubernetes-for-developers/celery-worker:0.4.0 \
-    --restart=Never --image-pull-policy=Always --rm testing /bin/sh
+    kubectl apply -f FinalProject\AWS\deploy\deployment.yml
 
 
 _Note_:

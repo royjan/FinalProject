@@ -2,71 +2,82 @@
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
 metadata:
-  name: kub-autoscaling-example
+  name: gridScale
 rules:
   - apiGroups: ["*"]
     resources: ["deployments", "deployments/scale"]
     verbs: ["get", "list", "update"]
+
+
+
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: kub-autoscaling-example
+  name: gridScale
   namespace: kube-system
+
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
-  name: kub-autoscaling-example
+  name: gridScale
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: kub-autoscaling-example
+  name: gridScale
 subjects:
   - kind: ServiceAccount
-    name: kub-autoscaling-example
+    name: gridScale
     namespace: kube-system
+
+
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kub-autoscaling-example
+  name: gridScale
   namespace: kube-system
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: kub-autoscaling-example
+      app: gridScale
   template:
     metadata:
       labels:
-        app: kub-autoscaling-example
+        app: gridScale
     spec:
       tolerations:
         - effect: NoSchedule
           key: node-role.kubernetes.io/master
-      serviceAccountName: kub-autoscaling-example
+      serviceAccountName: gridScale
+      
       containers:
-        - name: kub-autoscaling-example
-          image: kalaspuffar/kub-autoscaling-example
+        - name: gridScale
+          image: kalaspuffar/gridScale
           imagePullPolicy: Never
           resources:
             requests:
-              cpu: 100m
-              memory: 50Mi
+              cpu: 1000m
+              memory: 3750Mi
+            limits:
+              cpu: 1750m
+              memory: 7500mi
+
+
           env:
             - name: INTERVAL
-              value: "30"
+              value: "15"
             - name: RABBIT_HOST
-              value: "http://172.17.0.11"
+              value: "http://ec2-18-193-6-223.eu-central-1.compute.amazonaws.com/"
             - name: RABBIT_USER
-              value: "user"
+              value: "worker"
             - name: RABBIT_PASS
-              value: "test123"
+              value: "king"
             - name: AUTOSCALING
               value: >
-                1|5|5|default|php-apache|testqueue;
+                1|5|2|default|FinalPro|test;
             - name: LOGS
               value: HIGH
-            - name: SLACK_HOOK
-              value: ''
+           

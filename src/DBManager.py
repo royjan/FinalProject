@@ -7,7 +7,7 @@ class DBManager:
     password = "king"
     scheme = "postgres"
     port = "5432"
-    protocol = "postgres"
+    protocol = "postgresql"
     url = "ec2-54-93-249-101.eu-central-1.compute.amazonaws.com"
 
     engine = create_engine(

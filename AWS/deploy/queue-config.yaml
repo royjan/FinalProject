@@ -4,9 +4,9 @@ kind: ConfigMap
 metadata:
   name: bitnami-rabbitmq-config
 data:
-  RABBITMQ_USERNAME: "user"
-  RABBITMQ_PASSWORD: "bitnami"
-  RABBITMQ_VHOST: "/"
+  RABBITMQ_USERNAME: "worker"
+  RABBITMQ_PASSWORD: "king"
+  RABBITMQ_VHOST: "/rhost"
   RABBITMQ_NODE_PORT_NUMBER: "5672"
-  RABBITMQ_MANAGER_PORT_NUMBER: "15672"
+  RABBITMQ_MANAGER_PORT_NUMBER: "32779"
   WORKER_DEBUG_LEVEL: "info"
